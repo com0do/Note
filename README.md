@@ -1,2 +1,2 @@
-# Note
-Just for not forget
+# Initial page
+
