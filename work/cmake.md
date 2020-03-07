@@ -1,3 +1,7 @@
+---
+description: 基本知识
+---
+
 # CMake
 
 
@@ -7,6 +11,7 @@
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+
 #添加文件
 include_directories(include)
 source_group(src)
@@ -31,6 +36,7 @@ add_library(libhello SHARED ${LIB_SRC})  #默认静态库
 set_target_properties(libhello PROPERTIES OUTPUT_NAME "hello")
 add_executable(hello ${APP_SRC})
 target_link_libraries(hello libhello)
+
 #XP平台动态库
 #define LIBHELLO_API __declspec(dllexport)
 LIBHELLO_API void hello(const char* name);
@@ -97,5 +103,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} glib-2.0 gthread-2.0 gobject-2.0 gmo
 
 ### find\_package与CMake如何查找链接库详解
 
-> 还是CSDN查找吧
+> 还是CSDN查找吧 [http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/\#id18](http://www.yeolar.com/note/2014/12/16/cmake-how-to-find-libraries/#id18)
+
+
 
