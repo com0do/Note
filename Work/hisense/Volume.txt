@@ -1,0 +1,91 @@
+﻿
+
+masman:	向reggie注册挂载的卷标	------------->>>>>
+
+
+hotplugging context structure:  hplg_ctx_struct
+
+
+
+md: 	media drivers 			------------->>>>>
+
+	file/granary:	stash封装
+
+	file/harvest:	与granary合作完成文件检索
+
+
+ma:	media API      			------------->>>>>
+
+	query:	Generic API to search/browser media items
+		query module for media items. Sends commands and requests to the backends, and send signals and results to the clients.
+
+	reggie:	卷标管理
+		Module to manager all volumes available in the  system.
+	
+
+stash:	sqlist数据库封装	------------->>>>>
+
+fsal2:	文件系统抽象	------------->>>>>
+
+loreg:	键值缓冲		------------->>>>>
+
+biz: 	model-volume model-massstorege
+
+新增txt分类：
+	新增目录迭代器：model-directory/src/model-directory-iterator.cpp
+	新增items：	ma/common/items
+	新增检索：	md/favourites/garage/core/src; md/file/granary/src/rye_read.cpp
+	app入口：	app-sl2-granary-main.cpp
+	
+
++++++++++++++++++++++++++++++++
+[granary]
+
+GranarySchema:
+	数据库创建，将分散的数据表合并，
+	
+stash:
+	ConnectionImpl:  	管理连接
+	CommandImpl: 	执行statement并返回reader
+	StashStmtImpl:	statement数据格式化
+	ReaderImpl:		获取数据并读取，map[name,result] or deque[result]
+	
+granaryAggregator
+
+GranaryBaseSQL:
+
+grnaryItemSQL
+
+++++++++++++++FSAL2+++++++++++++++++
+
+tvmain     831  0.0  0.6  39824  4956 ?        SNsl 03:52   0:01 /usr/local/bin/masman -d -p dvb -u 127.0.0.1:12321 -i -P 0x000003 -l 3000
+
+2121 		resmon
+2123 		mdharvester		*0
+2122		mdharvester 		*1
+36343		tvmain			*2
+
+fsal2RegistrarMediaIDGet()
+	- 0 :UUID
+	- 1 :mount pointer
+	- 2 : fsUUID
+
+
+fsal2_com_socket.c
+	
+
+fsal2ConConnRunSockets:
+	
+
+ -----------masman:
+ 
+masman_api.c ----->   fsal2ServerLMQStart : 188
+mntdevrep.c ----> fsal2MediaRegister 	:1639
+				mntdev_node_fsal2reg()
+
+
+
+EA29-D78C
+
+
+

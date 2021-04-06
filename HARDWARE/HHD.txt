@@ -1,0 +1,22 @@
+﻿
+bool disable_rx = TRUE;
+ioctl(dev,IO_IOCTL_SREIAL_RX,&disable_rx);  	//禁能接收，准备发送，因为485是半双工的。
+write(dev,buffer,buffer_len);
+fflush(dev,IO_IOCTL_SREIAL_WAIT_FOR_TC,NULL);
+
+去讲代码显得你好业余啊 ！！！？？？
+
+
+//----------------------X_X--------------------------- 
+
+		不要在编辑器配置上浪费1秒钟！！
+		
+0、其他的统统暂停，先把GCU、GCU4TIU、TIU程序看透！ 
+ 
+1、有计划了就一定要执行到底，把文档先看完:   M4/UCOS/lwIP --->把这些应用到K60上!
+
+2、K60 的驱动，MQX如何移植，如何驱动一定要熟悉 !
+
+3、代码结构不清晰，功能划分不明确，模块之间耦合太多，看《代码大全》《linux编程艺术》，从高层次理解代码架构。 高内聚，低耦合。
+
+4、

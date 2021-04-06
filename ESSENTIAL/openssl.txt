@@ -1,0 +1,27 @@
+﻿
+
+
+【openssl证书请求和自签名命令req详解】
+https://www.cnblogs.com/gordon0918/p/5409286.html
+1  	生产客户端的秘钥，保证秘钥只有客户端自己拥有
+2  	以客户的秘钥和客户端自身的信息(国家等)为输入，生产证书请求文件。
+		其中客户端的公钥和客户端信息是明文保存在证书请求文件中的，而客户端私钥的作用是对客户端公钥及客户端信息做签名，自身是不包含在证书请求中的，然后把证书请求文件发送给CA机构
+3	CA机构接收到客户端的证书请求文件后，首先校验其签名，然后审核客户端信息，最后CA机构使用自己的私钥为证书请求文件签名，生产证书文件，下发客户端，此证书就是客户端的身份证，来表明用户的身份。
+
+req指令说明
+[new/x509]
+当使用-new选取的时候，说明是要生成证书请求，当使用x509选项的时候，说明是要生成自签名证书。
+
+#!/bin/bash
+# Small and simple script to create Certificate Authority (root CA), create client and server certificate requests, sign them and transform into OS consumable form.
+# Please ensure  to change certificate subjects and ca_settings.conf/cert_settings.conf as per your policy. Existing values is for reference only.
+
+生产自签名证书
+openssl req -x509 -config ./ca_settings.cnf -new -newkey rsa:2048 -nodes -out ca.cert -keyout ca.key -days 365
+openssl req -new -newkey rsa:2048 -nodes -out client.csr -keyout client.key -subj "/CN=MMSDK_Client_Cert/C=US/ST=WA/L=Seattle/O=Amazon"
+openssl req -new -newkey rsa:2048 -nodes -out server.csr -keyout server.key -subj "/CN=localhost/C=US/ST=WA/L=Seattle/O=Amazon"
+openssl x509 -req -in client.csr -CA ca.cert -CAkey ca.key -CAcreateserial -out client.cert -extfile ./cert_settings.cnf -extensions v3_req -sha256 -days 365
+openssl x509 -req -in server.csr -CA ca.cert -CAkey ca.key -CAcreateserial -out server.cert -extfile ./cert_settings.cnf -extensions v3_req -sha256 -days 365
+cat server.cert ca.cert > server.chain
+cat client.cert ca.cert > client.chain
+openssl pkcs12 -export -clcerts -inkey client.key -in client.chain -out client.p12 -name "client_cert_key"

@@ -1,0 +1,85 @@
+﻿
+文件描述符和文件流之间的转换
+FILE *fdopen(int fildes, const char *type);
+   这个函数很有用的，功能是将一个流关联到一个打开的文件号filedes上，
+   该filedes可以是open、pipe、dup、dup2和creat等调用返回的结果
+   type指定流打开方式，同fopen的打开方式，如"a", "r"，"w"等等
+   fdopen的流打开方式服从filedes的打开方式，比如filedes的open指定O_RDONLY，那么fdopen也只能指定"r"的打开方式了。
+   用fdopen的好处很明显，如果你不得已只能打开文件号，比如socket或者dup调用，但又想用fprintf，fscanf等流操作来进行读写，那么就再fdopen一次好了。
+
+   int fileno(FILE stream);
+   用fileno有什么好处呢？你用fopen打开了文件，但是又想用flock或者lockf来给文件加锁，或者用fcntl来进行某些底层的操作，
+   但上述这些函数只能对打开的文件号操作，而不能对打开流，这时候就用fileno再flock、lockf、fcntl好了。
+
+
+
+文件描述符
+	dup2(fd,STDIN_FILENO) 	//是在STDIN_FILENO上打开fd所指向的文件，若STDIN_FILENO原来是打开的则首先关闭，
+	这实际上实现了重定向，但是并没有关闭fd，如果环境为程序打开了0,1,2，那么fd起码是3，有必要关它一下。
+例子：
+	mode_t f_attrib = S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
+	int fd_save = dup(STDOUT_FILENO); //暂存描述符
+	int testfd = open("/tmp/out.bak",O_CREATE|O_RDWR|O_APPEND,f_attrib);
+	cout <<strerror(errno) << endl;
+	cout << "return value: " << dup2(test_fd,STDOUT_FILENO) << endl;
+	close(testfd);
+	cout << "this will write in file" << endl;
+	cout << "reserve value: " << dup2(fd_save,STDOUT_FILENO) << endl;
+	close(fd_save);
+	cout << "this will write to terminate " << endl;
+	
+fork  ------------>>>>>>
+	https://blog.csdn.net/kevinstoic/article/details/11721499
+	https://www.cnblogs.com/leoo2sk/archive/2009/12/11/talk-about-fork-in-linux.html
+查看进程树：pstree -p|grep a.out
+	#include <stdio.h>
+	#include <sys/type.h>
+	#include <unistd.h>
+	int main(){ 
+		pid_t pid1 = fork(),pid2 = fork();
+		printf("pid1=%d,pid2=%d\n",pid1,pid2);
+		return 0;
+	}
+1 	产生了几个进程
+2	其中一个结果pid1=1001,pid2=1002,其他的结果是什么？
+	int main(){
+		for(int i =0;i<2;i++){
+			fork(); printf("ppid:%d,pid:%d,-  ",getppid(),getpid(),i);
+		}
+		return 0;
+	}
+1 	输出几个-
+new ------------>>>>>>
+有3种实现方式
+	temp* t1 = new temp;
+	temp* t2 = new (std::nothrow) temp;
+	new (t2) temp;  	//不分配内存
+	temp t3 = (temp*) ::operator new (sizeof(temp)); 	//分配内存，但是不执行构造
+成员指针 ------------>>>>>>
+temp impl;
+int temp::* a_ptr = &temp::a;
+int (temp::*b_fun)() = & temp::b;
+impl.*a_ptr = 123;
+(impl.*b_func)();
+*Access to protected member through memeber-pointer*
+	struct Base{protected:int value;};
+	struct Derived:Base{
+		void f(Base const& other){ int n = other.*(&Derived::value); (void) n; }
+	};
+
+虚函数表 ------------>>>>>>
+struct what{
+	virtual void f1(){cout << "1" << endl;	}
+	virtual void f2(){cout << "2" << endl;	}
+	virtual void f3(){cout << "3" << endl;	}
+};what* w_ptr = new what;	typedef void(*Func)(void);
+Func f1 = (Func)((*(long**)w_ptr)[0]);
+Func f2 = (Func)((*(long**)w_ptr)[1]);
+Func f3 = (Func)((*(long**)w_ptr)[2]);
+f1(); f2(); f3();
+
+SIGNAL ------------>>>>>> https://www.cnblogs.com/lvyahui/p/7389554.html
+中断 	SIGINT	  	CTRL+C
+退出		SIGQUIT		CTRL+\
+挂起		SIGTSTP		CTRL+Z
+连接断开	SIGHUP		终端检测到连接断开将信号发至与该终端相关的控制进程（回话首进程），或者回话首进程终止，将信号发至前台进程组中的每一个进程。

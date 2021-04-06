@@ -1,0 +1,39 @@
+﻿
+
+FarField:
+
+sequenceDiagram
+    participant F as FarField
+    participant S as SOC
+
+ Note over F,S: USB in availabled
+
+  S ->> F: [ACTION] Check FarField plugin
+  S ->> F: [USB] Check FarField plugin
+  S ->> F: [USB] Get FarField status and get control
+
+  Note over F,S: Get reference audio data
+  F ->> S: [LINE-IN] Get refference data
+
+Note over F,S: STR suspend
+S ->> F: [USB] Set suspend mode
+F ->>F: Set suspend
+F ->> F:  Switch USB_D+ to INTR of FarField
+F ->>S: [USB] Set success
+S ->>S: [USB]Switch USB_D+ to INTR of SOC
+
+Note over F,S: STR resume
+F ->>F: Wake word happend
+F ->>S: Interrupt SOC
+F ->>F: Wait 1S switch INTR to USB_D+
+S ->>S: STR resume
+S ->>S: Switch INTR to USB_D+
+S ->>F: [USB] Check trigger status
+S ->>F: [USB] Set normal mode
+
+alt  Trigger
+  S  ->> F: [USB] Get audio directive
+  S -> F: [USB] Start interaction
+else No trigger
+ F ->> F: Wait wake word
+ end

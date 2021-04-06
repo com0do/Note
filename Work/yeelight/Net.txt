@@ -1,0 +1,6 @@
+
+
+
+### 组播风暴抑制 [IGMP]
+ - 这是通过更改内核网络协议栈实现的，路径：rtl819x/linux-3.10/drivers/net/rtl819x/rtl83xx/storm.c
+ - 应用层对应的设置位置为： echo  "200 3" > /proc/StromCtrl

@@ -1,0 +1,59 @@
+﻿
+
+#if (CONFIG_ODP_ENABLE_HOOK == 1)
+#define ODP_HOOK_ALIAS(type, name, __alias,...)			\
+	type __alias(__VA_ARGS__);							\
+	type name() __attribute((weak, alias(#__alias)));			\
+	type __alias(__VA_ARGS__)
+#define ODP_HOOK_DEFINE(type, name, ...) ODP_HOOK_ALIAS(type, name, __odp_##name, __VA_ARGS__)
+#else
+#define ODP_HOOK_DEFINE(type, name, ...) type name(__VA_ARGS__)
+#endif
+
+// --------test: --->>
+ODP_HOOK_DEFINE(int, t_dummy, int a){ cout << " bad world " << endl; }
+
+// *********************
+void __cgy_profile_func_exit(void *this_fn, void *call_site) __attribute__((no_instrument_function))
+gcc -o test main.c -finstrument-functions
+
+获取动态参数的 个数
+
+#ifndef SYNA_AUDIO_SENDCMD_COMMON_H
+#define SYNA_AUDIO_SENDCMD_COMMON_H
+
+#include "syna_types.h"
+
+#define _NARGN(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, N, ...) N
+#define _GRANN  13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+
+#if defined(_MSC_VER)
+#define LEFT_PAREN (
+#define RIGHT_PAREN )
+#define NARGS(...) (_NARGN LEFT_PAREN __VA_ARGS__##_GRANN, _GRANN RIGHT_PAREN)
+#define SENDCMD(cmd, app_module_id, command_id, ...) \
+    syna_audio_sendcmd(cmd, (uint32_t)(app_module_id), (uint32_t)(command_id), NARGS(__VA_ARGS__), __VA_ARGS__)
+#elif defined(__GNUC__)
+
+#define NAGGS_TRY 1 
+#if NAGGS_TRY
+    #define NARGS(...) \
+              (sizeof(#__VA_ARGS__) == sizeof("")?0:_NARG_(__VA_ARGS__, _GRANN))
+
+    #define _NARG_(...) _NARGN(__VA_ARGS__)
+#else
+    #define NARGS(...) (sizeof(( int[]){0,##__VA_ARGS__})/sizeof( int)-1)
+#endif 
+
+#define SENDCMD(cmd,app_module_id, command_id, ...) \
+       syna_audio_sendcmd(cmd,app_module_id, command_id, NARGS (__VA_ARGS__), ##__VA_ARGS__)
+#else
+#define NARGS(...) \
+              (sizeof(#__VA_ARGS__) == sizeof("")?0:_NARG_(__VA_ARGS__, _GRANN))
+
+#define _NARG_(...) _NARGN(__VA_ARGS__)
+#define SENDCMD(cmd, app_module_id, command_id, ...) \
+    syna_audio_sendcmd(cmd, (uint32_t)(app_module_id), (uint32_t)(command_id), NARGS(__VA_ARGS__), __VA_ARGS__)
+#endif
+
+int32_t syna_audio_sendcmd (Command *cmd, uint32_t  app_module_id, uint32_t  command_id, uint32_t num_32b_words, ...);

@@ -1,0 +1,40 @@
+﻿echo 4 >/sys/devices/ir/IRDebug
+echo  7 >/proc/sys/kernel/printk
+
+DFB log打开步骤：
+1、修改/etc/profile 取消mi log 重定向：
+/applications/apm/bigbang ---enable_no_root ---start_service svcmgr ---name APPMGR ---path /applications/apm/appmgr ---argv -ed off -kr off -c /etc/vendor/app.cfg 2>&1 | /usr/local/bin/OutputShunt 8192000 /var/local/log.mi &
+修改成：
+/applications/apm/bigbang ---enable_no_root ---start_service svcmgr ---name APPMGR ---path /applications/apm/appmgr ---argv -ed off -kr off -c /etc/vendor/app.cfg 2>&1 &
+2、打开 /config/directfbrc
+#quiet -->屏蔽
+debug -->打开
+degug_input -->新增
+3、sync
+4、重启
+
+printk --> dmsg
+多码值头码：V+ BF / V- BE / C+ BD / C- BB
+
+KMEMLEAK ------->>>>
+CONFIG_HAVE_DEBUG_KMEMLEAK=y
+CONFIG_DEBUG_KMEMLEAK=y
+CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE=400
+kmemleak=on
+
+inputkeyevent脚本 ------->>>>
+bin中已经有了kmemleak,可以直接使用
+Kmemleak实操如下：
+1.     开机后挂载debugfs
+mount -t debugfs nodev /sys/kernel/debug/
+2.     定时获取Kmemleak资讯
+cat /sys/kernel/debug/kmemleak
+注：默认下kmemleak 10min扫一次内存；如果需要即时扫， 跑一次 echo scan > /sys/kernel/debug/kmemleak
+
+while true; do ps -o "user,comm,pid,ppid,vsz,stat,rss,args"; cat /proc/meminfo; cat /sys/kernel/debug/mali/gpu_memory; sleep 2;done  >/var/local/ps.txt 2>&1 & \n
+
+执行inputkeyevent 9千次会挂掉。
+n=0; while [ $n -lt 100000 ] ;do inputkeyevent 4 >/var/local/inputkey.txt 2>&1 ; echo "$$ ----------------->>>>>>>>> $((++n)) times"; done   &\n
+
+观察次slab可以发现每次增加的大小
+grep -n Slab /var/local/ps.txt \n

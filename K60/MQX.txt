@@ -1,0 +1,26 @@
+﻿1、PSP
+	MQX 使用 0-7 优先级
+	K系列支持16级硬件优先级，偶数用在MQX应用，奇数用在MQX PSP且不能用在MQX应用。
+	MQX应用中断等级是0-7，对应0-14，在_bsp_int_init()中实现。
+		MQX_HARDWARE_INTERRUPT_LEVEL_MAX
+		BSP_DEFAULT_MQX_HARDWARE_INTERRUPT_LEVEL_MAX     	(2L)
+		
+	安装MQX应用中断如下：
+		_int_install_isr(vector,isr_ptr,isr_data);  	
+		_bsp_int_init(vector,pri,subpri,,TRUE );  // pri  2.3..4.7 (MAX ,7)
+	安装kernel ISR(绕过 MQX)中断如下：
+		_int_install_isr(vector,isr_ptr,isr_data);  	
+		_bsp_int_init(vector,pri,subpri,,TRUE );  // pri  0.1   (0,MAX-1)
+		Notoce :kernel_isr函数必须生命为:void my_kernel_isr(void) !!
+		
+	不同的任务优先级、不同的MAX宏 BASEPRI的值不同，
+	
+
+hard fault :
+	数组越界，内存分配失败，注册了中断但没有相应的入口函数
+	
+一延时就重启：
+	看门狗的问题
+	全局变量没有做互斥
+	高优先级一直占用资源，没有DELAY
+	优先级反转

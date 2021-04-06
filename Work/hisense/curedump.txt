@@ -1,0 +1,63 @@
+﻿
+----->>>>Coredump in language-biz->setosd
+#0  0x4143e756 in __libc_do_syscall () from /lib/libc.so.6
+#1  0x4144c682 in raise () from /lib/libc.so.6
+#2  0x4144ef76 in abort () from /lib/libc.so.6
+#3  0x41715020 in __gnu_cxx::__verbose_terminate_handler() ()
+   from /lib/libstdc++.so.6
+#4  0x41713a68 in __cxxabiv1::__terminate(void (*)()) ()
+   from /lib/libstdc++.so.6
+#5  0x41713a84 in std::terminate() () from /lib/libstdc++.so.6
+#6  0x41713cbe in __cxa_throw () from /lib/libstdc++.so.6
+#7  0x4174ab3a in std::__throw_logic_error(char const*) ()
+   from /lib/libstdc++.so.6
+#8  0x462dc2b4 in char* std::string::_S_construct<char const*>(char const*, char const*, std::allocator<char> const&, std::forward_iterator_tag) ()
+   from /usr/local/lib/libboost_regex.so.1.54.0
+#9  0x4175266e in std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&) ()
+   from /lib/libstdc++.so.6
+#10 0x01aeecd8 in biz::ModelComponentLanguage::onSetValueLanguageOsd(biz::ModelAPIModifyNumericValueEvent const&) ()
+#11 0x01af07fc in ?? ()
+#12 0x01e41578 in biz::ModelComponent::onAccessEvent(frame::Event const&) ()
+#13 0x01e423d8 in ?? ()
+#14 0x41f7aaf8 in frame::AbstractComponent::deliverAnyEvent(frame::MsgIds&, boo---Type <return> to continue, or q <return> to quit---
+st::shared_ptr<frame::EventEntry>) () from /usr/local/lib/libframe.so
+#15 0x41f7aca4 in frame::AbstractComponent::deliverEvent(frame::MsgIds&, boost::shared_ptr<frame::EventEntry>) () from /usr/local/lib/libframe.so
+#16 0x41f82f08 in frame::AbstractApplication::scheduleEvents() ()
+   from /usr/local/lib/libframe.so
+#17 0x41f90ff4 in frame::DefaultPOSIXProcess::processNextEvent() ()
+   from /usr/local/lib/libframe.so
+#18 0x41fb717c in ltLinuxSelectMainLoop::exec() ()
+   from /usr/local/lib/libframe.so
+#19 0x41f9164c in frame::DefaultPOSIXProcess::defaultLoop() ()
+   from /usr/local/lib/libframe.so
+#20 0x41f92068 in frame::DefaultPOSIXProcess::spawnThreadMethod() ()
+   from /usr/local/lib/libframe.so
+#21 0x4178e63c in _cspOsalPOSIX_pthread_wrapper ()
+   from /usr/local/lib/libcsp-osal-common.so
+#22 0x4169e2cc in start_thread () from /lib/libpthread.so.0
+#23 0x414bc5ec in ?? () from /lib/libc.so.6
+
+
+
+ 
+#0  0x4143e756 in __libc_do_syscall () from /lib/libc-2.18.so
+#1  0x4144c682 in raise () from /lib/libc-2.18.so
+#2  0x4144ef76 in abort () from /lib/libc-2.18.so
+#3  0x009798e0 in SbSystemBreakIntoDebugger ()
+#4  0x00a2aa28 in ?? ()
+#5  <signal handler called>
+#6  0x0097936c in cobaltDFBEvent(void*) ()
+#7  0x008066f4 in AppManagerClientApp::onKeyEvent(DFBInputEvent*) ()
+#8  0x41030df4 in hs::apmclient::AppManagerClient::notifyAppKeyEvent(frame::MsgIds&, frame::TransportInfo const&, std::string const&, rpc::appmanager::KeyEvent_t const&) () from /usr/local/lib/libapp-manager-client.so
+#9  0x008e3c40 in rpc::appmanager::Proxy::callNotifyAppKeyEvent(frame::MsgMeta const&, frame::TransportInfo const&, void const*, void*) ()
+#10 0x41f9fa58 in frame::CSpliceIOConnection::handleRawCSpliceMessage(frame::Event*&, _cspPart_struct*, int, _lmqTransmissionInfo_struct const*, frame::MsgClass) () from /usr/local/lib/libframe.so
+#11 0x41fa5510 in frame::LmqIOModule::lmqMessageLoop() ()
+   from /usr/local/lib/libframe.so
+#12 0x41fa5c90 in frame::LmqIOModule::lmqIOThread(void*) ()
+   from /usr/local/lib/libframe.so
+#13 0x4178ece0 in _cspOsalPOSIX_pthread_wrapper ()
+   from /usr/local/lib/libcsp-osal-common.so
+#14 0x4169e2cc in start_thread () from /lib/libpthread-2.18.so
+---Type <return> to continue, or q <return> to quit---
+#15 0x414bc5ec in ?? () from /lib/libc-2.18.so
+Backtrace stopped: previous frame identical to this frame (corrupt stack?)

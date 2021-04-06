@@ -1,0 +1,20 @@
+﻿
+数组指针
+
+http://c.biancheng.net/cpp/html/476.html
+
+谁说程序员没有女朋友的
+http://m.chinaz.com/news/2015/0908/443791.shtml
+
+
+动态库 http://www.cnblogs.com/cswuyg/p/3830703.html
+	linux下扩展名.so   	Dynamic share objects
+	XP下dll，			Dynamic linking libaray
+
+命令 	g++ -fPIC -shared test.cc -o lib.so
+		或者 g++ -fPIC test.cpp -c -o test.o   ld  -shared test.o -o lib.so
+如何确认一个共享对象是PIC
+	readelf -d foo.so |grep 	TEXTREL
+	如果有任何输出，说明这个foo.so不是PIC，TEXTREL表示代码段重定位表地址，PIC的共享对象不会包含任何代码段重定位表。
+	PIC的共享对象也会有重定位表，数据段中的GOT、数据的绝对地址引用，这些都是需要重定位的。
+  readelf -r Lib.so

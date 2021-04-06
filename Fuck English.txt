@@ -1,0 +1,11 @@
+﻿
+SRS：需求分析文档；
+HLD：概要设计文档；
+
+LLD：详细设计文档；
+
+BD:基本设计; 
+DD:详细设计;
+FD:结构设计;
+
+Here, we use the term "serialization" to mean the reversible deconstruction of an arbitrary set of C++ data structures to a sequence of bytes.  Such a system can be used to reconstitute an equivalent structure in another program context.  Depending on the context, this might used implement object persistence, remote parameter passing or other facility. In this system we use the term"archive" to refer to a specific rendering of this stream of bytes.  This could be a file of binary data, text data,  XML, or some other created by the user of this library.

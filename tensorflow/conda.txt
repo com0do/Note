@@ -1,0 +1,24 @@
+﻿
+更新
+conda update -n base -c defaults conda
+conda search -f package_name
+
+全局安装tensorflow
+pip install tensorflow==2.0.0 pandas jupyter notebook
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow==2.0.0a0
+
+jupyter notebook安装
+jupyter notebook password
+更新jupter_notebook_config.py配置
+nohup jupyter notebook
+
+创建环境
+conda creat -n tf2 python=3.6 numpy 
+conda remove -n tf2 --all
+conda remvoe -n tf2 numpy
+conda install -n tf2 matplotlib
+souce activate tf2
+deactivate tf2
+
+安装pytorch
+使用清华镜像时不要使用-c参数，该参数是anaconda的默认channel.

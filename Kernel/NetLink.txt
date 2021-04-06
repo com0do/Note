@@ -1,0 +1,17 @@
+﻿
+Netlink单播
+	一个用户进程和一个内核模块之间的数据通信，由用户空间发起
+多播（组播）
+	多个用户进程和一个内核模块之间的数据通信，由内核空间发起
+	
+struct sockaddr_nl{
+	sa_family_t 		nl_family;
+	unsigned short	nl_pad;
+	_u32			nl_pid;
+	_u32			nl_groups;
+}
+
+nl_pid:
+	为没有标识的socket_fd赋上唯一的本地标识，当有多个socket_fd需要保证唯一性。
+	当一个进程只有一个Netlink socket_fd时，nl_pid可以任意32整数；当一个进程中不同线程需要同一个Netlink协议的多个socket_fd时，必须加以区分,如：pthread_sef() << 16 | getpid();
+nl_groups:	= group ? 1 << (group - 1) : 0

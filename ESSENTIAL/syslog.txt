@@ -1,0 +1,41 @@
+﻿
+调用:
+	openlog("TEST",LOG_CONS | LOG_PID , 0);
+	syslog(LOG_INFO | LOG_MAIL, "this is test");
+	closelog();
+规则：50-default.conf
+	添加规则：user.debug 		/var/log/degbu
+	重启：/etc/init.d/rsyslog restart
+Facility和Severity可以使用通配符，也可以指定多个，用逗号隔开,Facility和Severity的组合可以有多个，用分号隔开，文件前面加一个减号表示日志不立即写入文件，而是在缓冲中积攒到一定的条件再写，这样 可以提高性能，但是当机可能会丢失数据：*.*;auth,authpriv.none          -/var/log/syslog 
+可以把syslog消息通过UDP发送到syslog服务器的514端口 (在rsyslog.conf发开选项)：
+*.err    @192.168.0.1
+发生错误时，在控制台打屏：
+*.err    /dev/console
+
+facility 日志设备
+	auth       –pam产生的日志
+	authpriv   –ssh,ftp等登录信息的验证信息
+	cron       –时间任务相关
+	kern       –内核
+	lpr         –打印
+	mail       –邮件
+	mark(syslog)–rsyslog服务内部的信息,时间标识
+	news       –新闻组
+	user        –用户程序产生的相关信息
+	uucp       –unix to unix copy, unix主机之间相关的通讯
+	local 1~7  –自定义的日志设备
+日志级别
+	debug      –有调式信息的，日志信息最多
+	info       –一般信息的日志，最常用
+	notice     –最具有重要性的普通条件的信息
+	warning    –警告级别
+	err        –错误级别，阻止某个功能或者模块不能正常工作的信息
+	crit       –严重级别，阻止整个系统或者整个软件不能正常工作的信息
+	alert      –需要立刻修改的信息
+	emerg      –内核崩溃等严重信息
+	none       –什么都不记录
+	从上到下，级别从低到高，记录的信息越来越少
+
+---------------------
+
+本文来自 baidu20008 的CSDN 博客 ，全文地址请点击：https://blog.csdn.net/baidu20008/article/details/11098395?utm_source=copy 

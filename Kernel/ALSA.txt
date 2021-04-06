@@ -1,0 +1,23 @@
+﻿
+
+简称：http://www.360doc.com/content/18/0202/22/6828497_727298589.shtml
+ASLA - Advanced Sound Linux Architecture
+ OSS - 以前的Linux音频体系结构，被ASLA取代并兼容
+ Codec - Coder/Decoder
+ I2S/PCM/AC97 - Codec与CPU间音频的通信协议/接口/总线
+ DAI - Digital Audio Interface 其实就是I2S/PCM/AC97
+ DAC - Digit to Analog Conversion
+ ADC - Analog to Digit Conversion
+ DSP - Digital Signal Processor
+ Mixer - 混音器，将来自不同通道的几种音频模拟信号混合成一种模拟信号
+ Mute - 消音，屏蔽信号通道
+ PCM - Pulse Code Modulation 一种从音频模拟信号转换成数字信号的技术，区别于PCM音频通信协议
+ 采样频率 - ADC的频率，每秒采样的次数，典型值如44.1KHZ
+ 量化精度 - 比如24bit，就是将音频模拟信号按照2的24次方进行等分
+ SSI - Serial Sound Interface
+ DAPM - Dynamic Audio Power Management
+ 
+ 音频编解码器Codec负责处理音频信息，包括ADC,DAC,Mixer,DSP,输入输出以及音量控制等所有与音频相关的功能。
+ Codec与处理器之间通过I2C总线和数字音频接口DAI进行通信。
+ I2C总线 - 实现对Codec寄存器数据的读写。
+ DAI - 实现音频数据在CPU和Codec间的通信。

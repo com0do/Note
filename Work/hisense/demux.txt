@@ -1,0 +1,35 @@
+﻿
+
+机顶盒介绍博客 ：http://blog.csdn.net/haoyuedangkong_fei/article/category/5607005
+
+在机顶盒中demux部分相对来说是比较复杂的部分，对于机顶盒软件开发的新手来说通常在这里会遇到一些困难，今天特意研究了一下驱动层代码，有一点自己的理解，因此写下来记录一下学习过程。
+
+机顶盒中数据是如何流向的呢？
+
+清流数据大致流向： TS流-->tuner -->demux-->Buffer-->app
+
+TS流中的数据是前段经过编码、复用、调制之后的数据，机顶盒通过tuner对TS流解调，demux解复用然后将数据送到buffer中，最后机顶盒通过读取buffer获得需要的数据。
+
+那这个数据流是如何驱动的呢？
+
+eg:播放节目:
+
+软件在启动时会创建很多任务，其中一个就是过滤不同psi、SI表（pat/pmt等），它循环的向demux请求PSISI表（主要设置的参数包括PID、data、mask），demux的数据是从tuner过来的，因此请求之前需要tuner先锁定频点，解调出数据，之后就解复用，解析PMT表后可以获得音视频的pid,  然后将音视频、PCR的PID送到播放器中进行播放， 当然播放过程中也需要不停的根据PID请求音视频数据。
+
+
+在demux中数据是如何过滤的呢？
+
+demux中主要的资源有slot、  filter和 buffer
+
+主要分为4个步骤：
+
+1. 判断是否有空闲的filter,没有的话就直接退出了。每一个数据请求需要占用一个filter，如PAT/PMT等表的请求，通常是需要一直占用filter的。
+
+2. 将app设置下来的PID设到SLOT里面，同时设置slot的数据输入端口，数据流的类型等， 然后根据这个slot创建一个虚拟通道，将slot、filter、buffer等联系在一起。
+
+slot.in = DMX_INPUT_PORT;
+slot.pid = ReqPid;
+slot.type = DMX_CH_TYPE_SECTION;
+3. 设置filter。首先设置filter的buffer，然后将app设置下来的data 、mask（data  mask相‘与’后来过滤数据）设置到filter中，filter将过滤后的数据放到buffer中。
+
+4. 最后通过回调，将数据抛向app层。

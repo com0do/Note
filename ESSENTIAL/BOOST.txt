@@ -1,0 +1,77 @@
+﻿
+平台使用的库
+atomic data_time filesystem iostream regex   serialization signals system 
+thread unit_test_framework test_exec_monitor 
+
+
+以下使用vs2013编译
+bootstrap.bat
+bjam stage --toolset=msvc-12.0 --without-graph --without-graph_parallel -stagedir="C"\boost'\vc12" link=static runtime-link=static threading=multi debug release
+
+// dynamic_pointer_cast是把被穿小鞋的大人转化成大人
+struct aa{
+        //aa() = default;
+        aa(int a,int b):a(a),b(b){}
+        virtual  ~aa() {}
+        short a;
+        short b;
+    };
+    struct bb:public aa{
+        //bb() = default;
+        bb(int a,int b,int p):aa(a,b),p(p){}
+        int p;
+        virtual ~bb(){};
+        aa* a1;
+    };
+
+    boost::shared_ptr<aa> a1 = boost::shared_ptr<bb>(new bb(1,2,3));
+    boost::shared_ptr<bb> b1 = boost::dynamic_pointer_cast<bb>(a1);
+    cout << a1->a << endl;
+    cout << b1->p << endl;
+    
+    
+匪夷所思的赋值方式：
+	using namespace boost::assign;
+	queue<int> v = (boost::assign::list_of(1)(2)(3).repeat_fun(12,&rand),12,10).to_adapter();
+    	v += 121,23,4545,565678;
+    	for(;!v.empty();){
+       	cout << v.front() << " ";\
+        	v.pop();
+    	}
+    	
+    	deque<int> d ;
+    	push_back(d) = 1,2,3,4,5,6,76,7,8,9,9;
+    	
+    	template<typename T>
+    	struct cnext{
+    		T seed;
+    		cnext(T seed):seed(seed){}
+    		T operator()(){return seed++;}
+	};
+    	vector<int> v;
+    	v += 1,2,repeat_fun(4,&rand),4;
+      	BOOST_ASSERT( v.size() == 7 );
+    	push_back( v ).repeat_fun(4,cnext<int>(0))(4).repeat_fun(4,cnext<int>(5));
+    	
+    
+asio 简单使用-------->>>>>
+https://www.cnblogs.com/lidabo/p/3906055.html
+
+
+
+
+# Boost add command !
+set(BOOST_ROOT C:/boost_1_64_0)
+set(Boost_INCLUDE_DIRS C:/boost_1_64_0)
+set(Boost_LIBRARY_DIRS C:/boost_1_64_0/stage/lib)
+#set(Boost_USE_STATIC_LIBS ON)   #only find static libs
+set(Boost_USE_MULTITHREADED ON)
+#set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost COMPONENTS system thread date_time signals chrono REQUIRED)
+if(Boost_FOUND)
+    include_directories(${BOOST_ROOT})
+    #add_executable(clion src/Sales_item.cpp)
+    target_link_libraries(clion ${Boost_LIBRARIES} ws2_32)
+endif()
+
+g++ dump.cpp -lboost_thread -lboost_date_time -lboost_system -lboost_chrono

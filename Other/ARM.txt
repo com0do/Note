@@ -1,0 +1,61 @@
+﻿
+Mutex和Semaphore，两者之间区别如下:
+ 有人做过如下类比：
+Mutex是一把钥匙，一个人拿了就可进入一个房间，出来的时候把钥匙交给队列的第一个，一般的用法是用于串行化对临界区代码的访问，保证这段代码不会被并行的运行。
+Semaphore是一件可以容纳N人的房间，如果人不满就可以进去，如果人满了，就要等待有人出来。
+对于N=1的情况，称为binary semaphore，一般的用法是，用于限制对于某一资源的同时访问。在有的系统中Binary semaphore与Mutex是没有差异的
+ 信号量可以设置计数器，而互斥锁只有0和1的关系。
+Semaphore semaphore = new Semaphore(1);表示同时访问资源的许可数量只有一个。这个语义可以实现一个Mutex互斥锁：
+某些命令
+
+HAL:hardware abstract level
+
+> 设置IP和子网掩码
+	ifconfig etho0 192.168.12.124 hw ether 00:11:22:33:44:55 netmask 255.255.255.0 broadcast 192.168.12.255 up
+
+> 设置默认网关
+	route add default gw 192.168.12.1
+	route del default gw 192.168.12.1
+	route -n  //examine route
+
+> 设置DNS  		-- /etc/resolv.conf
+	nameserver 192.168.0.1 		//first select
+	nameserver 192.168.0.2 		//second select
+
+> 开机启动 		-- /etc/rc.d/init.d/start_userapp
+	use sync when modify file complete!!!!
+
+> 创建定长文件 	-- 创建大小10M等待disk文件
+	dd if=/dev/zero of=/dev/shm/disk bs=1024 count=10240
+
+> NFS配置		-- vi /etc/exports
+	/nfsroot 	*(rw,sync,no_root_squash))
+	挂载命令：mount -t nfs 192.168.12.123:/homw/somefile /mnt -o nolock
+
+> tftp配置 		-- vi /etc/default/ftfpd-hpa
+	TFTP_USERNAME="tftp"
+	TFTP_DIRECTORY="/tftpboot"
+	TFTP_ADDRESS="0.0.0.0:69"
+	TFTP_OPTIOS="-l -c -s"
+
+> uboot 预设命令
+	upkernel=tftp $(loadaddr) $(serverip):$(kernel);nand erase clean
+		$(kerneladdr) $(kernelsize);nand write.jffs2 $(loadaddr) $(kerneladdr)
+		$(kernelsize)
+	uprootfs=mtdparts default;nand erase rootfs;ubi part rootfs;ubi create
+		rootfs;tftp $(loadaddr) $(rootfs);ubi write $(loadaddr) rootfs $(filesize)
+	nand_boot=nand read.jffs2 $(loadaddr) $(kerneladdr) $(kernelsize);bootm $(loadaddr)
+
+> 启动参数
+	char cmdline_def[] = "gpmi=g console=ttyAM0,115200n8 ubi.mtd=1 root=ubi0:rootfs rootfstype=ubifs fec_mac=echact"
+	uboot从NFS启动时参数：
+	root=/dev/nfs rw console=$(consolecfg) nfsroot=$(serverip):$(rootpath)
+	ip=$(ipaddr):$(serverip):$(gatewayip):$(netmask):$(hostname)::off	
+	root=/dev/nfd rw console=ttyAM0,115200 nfsroot=192.168.12.123:/nfsroot
+	ip=192.168.12.124:192.168.12.123:192.168.12.1:255.255.255.0:epc.zlgmcu.com:eth0:off
+	--:setenv bootargs 'root=   nfsroot=   ip=  '
+	--:saveenv
+	--:reset  //restart the board		
+	
+	  
+	      

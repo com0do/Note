@@ -1,0 +1,29 @@
+﻿
+
+
+reinterpret_cast<type-id> (expression)
+reinterpret_cast运算符是用来处理无关类型之间的转换；它会产生一个新的值，这个值会有与原始参数（expressoin）有完全相同的比特位。reinterpret_cast用在任意指针（或引用）类型之间的转换；以及指针与足够大的整数类型之间的转换；从整数类型（包括枚举类型）到指针类型，无视大小。
+
+const_cast转换符是用来移除变量的const，volatile，_unaligned限定符
+它是唯一能做到这一点的 C++ 风格的强制转型，而C不提供消除const的机制
+
+C 语言可更改const变量
+	const int cc = 12;
+    	int *p = (int*)&cc;
+   	 *p = 123;
+ 
+ static_cast <new_type> (expression)
+- static_cast来处理的转换就需要两者具有"一定的关系"
+- static_cast不仅可以用在指针和引用上，还可以用在基础数据和对象上
+- static_cast支持指向基类的指针和指向子类的指针之间的互相转换
+- static_cast是C++中最接近的C-type的转换方式
+
+dynamic_cast的转换需要目标类型和源对象有一定的关系：继承关系
+dynamic_cast下行转换时会检查操作是否有效，即会检查转换是否会返回一个被请求的有效的完整对象，检测在运行时进行。如果被转换的指针不是一个被请求的有效完整的对象指针，返回值为NULL
+
+向下转换： 	派生  ---》 基类
+向上转换：	基类  ---》 派生
+
+C++一般使用dynamic_cast转换符实现向上转换。智能指针可以毫无问题的进行向下类型转换，却不能使用dynamic_cast进行向上类型转换
+
+boost库有一个dynamic_pointer_cast的模板函数，可以实现智能指针的向上转换

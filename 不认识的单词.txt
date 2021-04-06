@@ -1,0 +1,72 @@
+﻿不认识的单词
+
+revision  [re·vi·sion || r?'v??n]
+n.  校订, 修订本, 修正
+ 
+ revert  [re·vert || r?'v?rt /-'v??t]
+v.  回复; 重提; 复旧; 重想
+
+ stash  [st??]
+v.  藏起来, 隐藏起来
+
+ amend  [a·mend || ?'mend]
+v.  改善, 改良, 修正; 改进, 改善; 改过自新
+
+ credential  
+n.  国书, 印信, 凭据
+
+discrete  [dis·crete || d?'skri?t]
+adj.  不连续的; 离散的
+
+ encapsule  
+v.  装入胶囊; 做成囊状
+
+maintain  [main·tain || me?n'te?n]
+v.  维持; 使继续; 保持; 维修, 保养
+
+discretion  [dis·cre·tion || d?'skre?n]
+n.  慎重, 考虑, 辨别力; 判定
+
+multiplexer 	复用器
+intervention 	插入 调停 介入
+transparent 	透明的，明显的
+tutorial   n 教程 a 指导的
+occupy 		v 占领 占
+mutual 		 共有的
+mechanism 	n.  机械, 结构, 机构
+optimize  	n. 使完美，使完善
+victim   		n .受害者
+defer 		v. 推迟，延期
+definitely 		a. 一定的
+invocatoin [in·vo·ca·tion || ‚ɪnvəʊ'keɪʃn]   n. 祈祷 ，符咒
+other than   	除了，不同于
+afterward 	之后，以后
+relevant 		相关的
+ dither  [dith·er || 'dɪðə]  n.  慌乱; 颤抖; 紧张  v.  慌乱; 犹豫; 踌躇	
+repository  [re·pos·ito·ry || rɪ'pɑzɪtərɪ /-'pɒz-]  n.  容器; 宝库; 贮藏处; 博物馆
+accomplish  [ac·com·plish || ə'kʌmplɪʃ]   v.  实现, 达到, 完成; 使完美; 走完, 度过
+polynomial  [pol·y·no·mi·al || ‚pɑlɪ'nəʊmɪəl /‚pɒ-]  n.  多词学名; 多项式
+counterpart  n.副本，复本，配对物
+ upstream    adj.  向上游的, 逆流而上的  adv.  向上游, 逆流地 
+prune  [pruːn]  n.  梅干, 洋李脯; 傻瓜; 乏味的人, 讨厌的人; 深紫红色
+		v.  整枝; 减少; 删除; 修剪, 修整; 删除; 剪去, 剪除; 削减
+arbitrate  [ar·bi·trate || 'ɑːbɪtreɪt] v.  公断, 仲裁; 仲裁
+arbitrary  [ar·bi·trar·y || 'ɑːbɪtrərɪ] adj.  专制的, 任意的, 恣意的
+propagation  [prop·a·ga·tion || ‚prɑpə'geɪʃn /‚prɒ-]   n.  增殖, 广传, 繁殖
+substitute  [sub·sti·tute || 'sʌbstɪtuːt /-tjuːt]  v.  代替; 替代, 取代  n.  代理, 代用品, 代理人
+demonstrate  [dem·on·strate || 'demənstreɪt]  v.  论证, 证明; 示范操作, 展示; 说明, 教; 显示, 表露; 示威
+grant  [grænt /grɑːnt]  n.  授予, 奖助金, 允许 v.  允许, 授与, 承认
+scenario  [sce·nar·i·o || sɪ'nerɪəʊ /sɪ'nɑːrɪəʊ]  n.  情节, 方案, 剧本
+mnemonic  [mne·mon·ic || nɪ'mɑnɪk /-ɒ-]    	adj.  有助于记忆的; 记忆的
+supervisor  ['su·per·vi·sor || 'suːpə(r)vaɪzə(r)] 	n.  监督人, 检查员, 管理人
+restricted  [re'strict·ed || rɪ'strɪktɪd] 	adj.  受限制的, 有限的 		unresticked ,adj,无限的，自由的
+coherence  [co'her·ence || -ɪərəns] 	n.  粘着; 统一; 凝聚; 连贯性
+mechanism  [mech·a·nism || 'mekənɪzm] 	n.  机械, 结构, 机构
+ambient  ['am·bi·ent || 'æmbɪənt] 		adj.  周围的
+amateur  [am·a·teur || 'æmətə] n.  业余从事者; 粗通的人; 外行; 爱好者 adj.  业余的; 外行的, 不熟练的
+supersede 取代
+thoroughly  [thor·ough·ly || 'θɜrəʊlɪ /'θʌrə-]  adv.  十分地, 彻底地
+pitfall  ['pitfɒ:l]  n.  陷阱, 诱惑, 阴谋, 易犯的错误, 意想不到的困难
+
+
+

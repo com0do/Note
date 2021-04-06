@@ -1,0 +1,205 @@
+﻿
+---
+description: 基本知识：shell13问
+---
+
+# SHELL
+
+
+-------------------SHELL基本功-------------
+[link](https://www.cnblogs.com/hkui/p/6423918.html)
+
+
+alias cchistory="history -c && echo > ~/.bash_history"
+过滤DNS
+sed 's/nameserver \\(.*\\)/DNS:\\1/' /etc/resolv.conf | tail -1 > netconfig.txt
+#define "{PAGER:-more}"
+
+find排除搜索 -o 或者 -a：而且 <https://blog.csdn.net/thinkinwm/article/details/8222659>
+https://blog.csdn.net/luckywang1103/article/details/81909055
+https://blog.csdn.net/caz28/article/details/50985844
+find . -path ./home -prune -o -name libshit.so  (-path后面的目录要严格符合./XXX模式)
+find . \(-path /home/shit1 -o -path /home/shit2 \) -prune -o -type f -name libshit.so
+find . -type f -name libshit.so ! -path /home/shit1/*  ! -path /home/shit2/*
+	忽略的路径必须紧跟着搜索的路径之后
+	必须加 -o
+排除特定文件
+find . -type f ! -name "*.h" -type f
+	! 必须在最后面，可叠加
+多种类型 -o
+find . -name "*.html" -o -name "*.js"|xargs grep -r "BusiTree" 
+使用正则
+find -r -E '0123|234234|234' *
+使用awk
+find . -name "*.php"|awk '{print "cat " $0 " |grep -H dbsys.mxxxx.justwinit.cn"}'|sh  
+使用exec 
+find . -name libshit.so -exec ls -hl {} \;
+find . -name libshit.so | xargs -i ls -hl {}
+find . -name libshit.so | xargs -I A ls -hl A
+
+xargs:  <https://www.cnblogs.com/wangqiguo/p/6464234.html>
+
+有三种特殊字符可使终端驱动程序产生信号，并送至前台进程组：
+	中断字符： 	Ctrl + C	:SIGINT
+	退出字符：	Ctrl + \   :SIGQUIT
+	挂起字符：	Ctrl + Z	:SIGTSTP
+有两个信号不可忽略：SIGKILL 	SIGSTOP
+
+bash ---------->>>>
+.bash_profile: 它在用户每次登录系统时被读取，里面的所有命令都会被bash执行。.profile和.login是不同系统下同义词
+.bashrc : 	bash shell调用另一个bash shell时读取，也就是在shell中再键入bash命令启动一个新shell时就会去读该文件。这样可有效分离登录和子shell所需的环境。但一般 来说都会在.bash_profile里调用.bashrc脚本以便统一配置用户环境。
+.bash_logout : 在退出shell时被读取。所以我们可把一些清理工作的命令放到这文件中。
+在 /etc目录的bashrc和profile是系统级（全局）的配置文件，当在用户主目录下找不到.bash_profile 和.bashrc时，就会读取这两个文件。.bash_history是bash shell的历史记录文件，里面记录了你在bash shell中输入的所有命令。可通过HISSIZE环境变量设置在历史记录文件里保存记录的条数。
+登录Shell(不管是不是交互式的)文件加载顺序如下:
+/etc/profile
+~/.bash_profile
+~/.bash_login
+~/.prof
+交互式非登录Shell文件加载顺序如下：
+/etc/bashrc
+~/.bashrc
+
+fzf 路径---------->>>>
+fd(){
+	local dir
+	dir=$(find ${1:-.} -path '*/\.*' -prune -o -type d -print 2> /dev/null | fzf +m) && cd "$dir"
+}
+
+
+sed -i 's/nameserver\ \(.*\)/nameserver\ 61.213.153.171/g'  /etc/resolv.conf
+shell : echo ${DF:-what}
+bjam: $(DF:E=what)
+var="cat test.sh"
+echo ${var}		//执行一次扫描，显示var内容
+eval ${var}		//执行二次扫描，执行var内容，返回$@ 	：原样保存了参数列表，也就是"$1""$2"...
+echo `${var}`		//执行一次扫描，显示var返回内容，返回$*	：保存了以$IFS指定的分割符所分割的字符串组。
+
+awk 'BEGIN{x=0}{if$1=="password"x++;if(x==3){sub(/0/,"123",$3)};print > "123.txt"}' data.txt
+for f in $(ls);do [ -f "$f" ] && awk '/^shi1/{print $0;} /^shit2/{exit}' |grep shit --color; done
+
+LAST 			---------->>>>
+VIM : Set_Secret: X,	Clear_Secret: set key=
+tar -czf - csplice | openssl enc -e -aes256 -out test.tar.gz
+openssl enc -d -aes256 -in test.tar.gz | tar xz -C temp/
+上述命令的解释：
+enc 使用加密进行编码
+-e  用来加密输入文件的 enc 命令选项，这里是指前一个 tar 命令的输出
+cloudhub://personinfo?id=dc0be6a5-77fe-11e7-bcae-005056a350a6
+$*与$@区别 		---------->>>>
+$* 和 $@ 都表示传递给函数或脚本的所有参数，不被双引号(" ")包含时，都以"$1" "$2" … "$n" 的形式输出所有参数。
+但是当它们被双引号(" ")包含时，"$*" 会将所有的参数作为一个整体，以"$1 $2 … $n"的形式输出所有参数；"$@" 会将各个参数分开，以"$1" "$2" … "$n" 的形式输出所有参数。
+
+产生随机数		---------->>>>
+echo $((16#$(date +%N|md5sum|head -c 8)))
+echo $RANDOM | md5sum |cur -c 5-11
+openssl rand -base64 30
+cat /proc/sys/kernel/random/uuid | md5sum | cut -f1 -d“ ”
+openssl rand -hex 6 | sed 's/\(..\)/\1:/g;s/.$//'
+
+计算文件创建权限	---------->>>>sudo 
+echo "obase=8;$((8#666 & (8#777 ^ 8#$(umask)) ))" | bc
+
+读取YES输入		---------->>>>
+echo -n "Do you want to continue? (Yes/No):"
+read YN
+if echo "$YN" | grep -q '^[Yy]\([Ee][Ss]\)*$'
+
+trap使用			---------->>>>
+trap "echo 'I have trapped Ctrl-C'" SIGINT
+trap "echo 'I want sleep;" EXIT	#捕获脚本退出
+trap -- SIGINT					#删除捕获
+
+sed使用 			---------->>>>
+set -i.bak -e "1,10d" input_file
+
+sort使用
+alias ccsort="du -sh * | sort -n -k1 -r"
+alias cchistory="history -c && echo   > ~/.bash_history
+
+批量更改文件后缀
+for file in $(ls *.a);do name=$(ls $file|cut -d. -f1); mv $file $name.cccc;done
+for file in $(find . -name *.c);do name=$(ls $file|cut -d. -f2);mv $file \.${name}\.cpp;done
+
+AWK		---------->>>> Bottom quick-key !!!
+file=/var/log/wtmp; (sudo dd if=/dev/zero of=$file bs=$(du -b $file|awk '{print $1}') count=1)
+awk '(NF && $1 !~ /^#/) {print $1 ": " $1 "_configl$(MAKE)"}' boards.cfg > .boards.depend
+current_usb=$(df | awk '/dev\/lo|dev\/sd/ { print $6; exit }')
+usb_path=$(df | awk '/dev\\/lo|dev\\/sd/{print $6}') && cp -fr $usb_path/avsservice /usr/local/bin/ && sync  && echo   > /var/local/log.txt && reboot \n
+pstree -p $(ps|grep avs|grep -v grep|cut -d \  -f 2)
+find -path ./ThirdParty -prune -o -name *.cpp -o -name *.h|xargs wc -l |awk 'BEGIN{A=0;}{if($2 == "total")A += $1;}END{print A;}'
+
+<<EOF ---------->>>>
+cat << SHIT >> SHIT.md
+fklwejflaskfjewf askldf 
+SHIT
+符号和字符串替换等：https://www.jb51.net/article/123081.htm
+shell脚本中的[]/[[]]区别： https://www.cnblogs.com/lit10050528/p/4915001.html
+
+SET位和粘滞位：https://blog.csdn.net/wuxian90/article/details/9613167
+
+光标移动技术：https://blog.csdn.net/wzb56/article/details/6926181
+
+
+ISO文件系统制作			---------->>>>
+mkisofs -l -J -L -r -o non.iso afg.tar.gz
+ISO文件其实就是光盘的镜像文件，刻录软件可以直接把ISO文件刻录成可安装的系统光盘，ISO文件一般以iso为扩展名，其文件格式为iso9660。
+ISO 9660，也被一些硬件和软件供应商称作CDFS（光盘文件系统），是一个由国际标准化组织（ISO）为光盘媒介发布的文件系统。
+其目标是能够在不同的操作系统，如Windows，Mac OS以及类Linux系统上交换数据。
+
+
+rsync使用   ---------->>>>
+选项： -z 	允许压缩， -v：冗长，-r：递归，-a:同步时间戳， -e ssh 选择ssh安全传输
+	-u：不覆盖目标位置已经改变的文件 ，-d：只同步补录树结构，不同步文件，--progress：进度信息
+	--delete: 删除目标位置创建的文件， --existing: 在目标位置不创建新文件
+	
+
+
+
+```text
+bash test.sh       # ./test.sh     # 新开一个shell
+source test.sh     # . test.sh
+
+# 重定向错误输出
+type shit >/dev/null 2>&1 &&(echo "obase=16;ibase=10;65535"| bc -l)
+echo "obase=16;ibase=10;32767"|bc -l        ##0x7FFF
+
+##产生随机数
+for i in $(seq 1 10);do echo $i $(($RANDOM/8192+3)) $(($RANDOM/10+3000));done
+
+## 求平均数 ./test.sh data
+[ $# -lt 1 ] && echo "paramter error" && exit -1
+[ ! -f $1 ] $$ echo "$1 is not a file" && exit -1
+awk '{printf("%d %0.2f\n",$1,$3/$2)}' $1|sort -k 2 -nr
+
+## while的使用
+while :; do type $1; [ $? -eq 0 ] && break; done
+
+## seq使用
+seq -s: -w 1 2 14
+seq -f "0x%g" 1 12
+
+## 统计网页中重复单词出现的次数
+wget -c "www.baidu.com" 
+sed "s/[^a-zA-Z]/\n/g" index.html | grep -v ^$ |sort |uniq -c |sort -k 1 -rn | head -5
+
+## 统计指定单词出现的次数
+if [ $# -lt 1 ] ; then echo "Usage: basename %0 FILE WORDS ......" ; exit -1 ; fi
+FILE=$1
+((WORDS_NUM=$#-1))
+
+do
+    shift
+    sed -e "s/[^a-zA-Z]/\n/g" $FILE | grep -v ^$ |sort|grep ^$1$ | uniq -c
+done
+
+## 一条命令的版本 , 可将 grep -e 替换成 egrep
+sed -e "s/[^a-zA-Z]/\n/g" index.html | grep -v ^$ | sort | grep -E "^name$|^another_name$" | uniq -c
+
+
+## ~/.inputrc
+    set completion-ignore-case on
+
+
+
+```
+

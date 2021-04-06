@@ -1,0 +1,20 @@
+diff --git a/site/bundle/leaderf.vim b/site/bundle/leaderf.vim
+index 06db98f..7d8379a 100644
+--- a/site/bundle/leaderf.vim
++++ b/site/bundle/leaderf.vim
+@@ -15,9 +15,13 @@ let g:Lf_ShortcutF = '<c-p>'
+ let g:Lf_ShortcutB = '<m-n>'
+ noremap <c-n> :cclose<cr>:Leaderf --nowrap mru --regexMode<cr>
+ noremap <m-p> :cclose<cr>:Leaderf! --nowrap function<cr>
+-noremap <m-P> :cclose<cr>:Leaderf! --nowrap buftag<cr>
++noremap <m-P> :cclose<cr>:Leaderf! --nowrap bufTag<cr>
+ noremap <m-n> :cclose<cr>:Leaderf! --nowrap buffer<cr>
+-noremap <m-m> :cclose<cr>:Leaderf --nowrap tag<cr>
++"noremap <m-m> :cclose<cr>:Leaderf --nowrap tag<cr>
++noremap <m-m> :<C-U><C-R>=printf("Leaderf! rg -e %s -g !*.json",expand("<cword>"))<cr><cr>
++noremap <m-B> :<C-U><C-R>=printf("Leaderf! rg -F --current-buffer -e %s ", expand("<cword>"))<cr><cr>
++noremap <m-b> :<C-U><C-R>=printf("Leaderf! rg -F --all-buffers -e %s ", expand("<cword>"))<cr><cr>
++
+ let g:Lf_MruMaxFiles = 2048
+ let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+ 

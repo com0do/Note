@@ -1,0 +1,2 @@
+﻿
+默认是CPU版本，安装GPU版本必须安装 tensorflow-gpu

@@ -1,0 +1,52 @@
+﻿
+不能实例化抽象类
+
+template <typename T>
+struct IsAbstract
+{
+	typedef char SmallType;
+	typedef int LargeType;
+
+	template <typename U>
+	static char Test(U(*)[1]);
+	template <typename U>
+	static int Test(...);
+
+	const static bool Result = sizeof(Test<T>(NULL)) == sizeof(LargeType);
+};
+#define CREATE_FISH(__FISHTYPE__) ([](){ return __FISHTYPE__::create();})
+
+//检查是否是完整类（避免抽象类被实现从而导致错误）,然后使用工厂函数创建类
+#define ADD_CREATE(__TYPE__) \
+		static __TYPE__* create() \
+	{ \
+		if (IsAbstract<__TYPE__>::Result) \
+		{ \
+			assert(0 && "abstract class"); \
+			return NULL; \
+		} \
+		__TYPE__ *pRet = new(std::nothrow) __TYPE__(); \
+		if (pRet) \
+		{ \
+			return pRet; \
+		} \
+			else \
+		{ \
+			delete pRet; \
+			pRet = NULL; \
+			return NULL; \
+		} \
+	}
+struct tt{
+	int aaa=1231, bb;
+	virtual void f1(){ cout << "dfeaf" << endl; }
+	virtual void f2() { cout << "d234" << endl; };
+	ADD_CREATE(tt);
+};
+int main()
+{
+	
+	tt* ta = (CREATE_FISH(tt))();
+	cout << ta->aaa << endl;
+	return 0
+}

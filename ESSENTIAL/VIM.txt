@@ -1,0 +1,251 @@
+﻿
+更新 --------------->>>>>
+sudo add-apt-repository ppa:jonathonf/vim
+sudo apt update
+sudo apt install vim
+
+公众号 --------------->>>>>
+https://mp.weixin.qq.com/s/rtICLadbVmSEj16Cr8UkxQ
+
+
+书签功能 --------------->>>>>
+设置
+	:mark {a-z}
+	:ma {a-z}
+	m{a-z}
+显示：
+	`{a-z} 调转对应书签的列
+	'{a-z} 跳转对应书签的行
+	:marks
+特殊标记：
+	 .		 最近编辑的位置
+	 ^		 最近插入的位置
+     '       跳转前的位置 
+     "       上一次退出文件的位置 
+     [       最后修改的位置的开头 
+     ]       最后修改的位置的结尾 
+
+标签切换/缓冲切换/窗口切换--------------->>>>>
+gt / 2gt / C+^
+https://www.cnblogs.com/bkylee/p/6120060.html
+
+手动编译VIM8--------------->>>>>
+sudo apt-get install libgtk2.0-dev libx11-dev libxt-dev
+sudo ./config --with-features=huge --enable-multibyte --enable-rubyinterp=yes --enable-pythoniterp=yes 
+	--with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu/ --with-gui=gtk2 --with-cscope
+make -j32 && sudo make install
+update-alternative --install /usr/bin/vim vim /usr/local/bin/vim 90
+vim8安装 --------------->>>>>
+https://vi.stackexchange.com/questions/11526/how-to-enable-python-feature-in-vim
+
+Search --------------->>>>>
+[LINK](https://harttle.land/2016/08/08/vim-search-in-file.html)
+：%/s/foo/bar/gc
+按下y表示替换，n表示不替换，a表示替换所有，q表示退出查找模式， l表示替换当前位置并退出。^E与^Y是光标移动快捷键，
+
+全选相关--------------->>>>>
+全部删除：按esc键后，先按gg（到达顶部），然后dG
+全部复制：按esc键后，先按gg，然后ggyG
+全选高亮显示：按esc键后，先按gg，然后ggvG或者ggVG
+单行复制：按esc键后, 然后yy
+单行删除：按esc键后, 然后dd
+粘贴：按esc键后, 然后p
+vim只能粘贴50行的问题：
+在当前用户主目录（~）编辑~/.vimrc（如果不存在，新建这个文件），添加一行
+:set viminfo='1000,<500  
+至于为什么要输入输入’1000,这个其实不重要，最主要的是输入<500,它是设置寄存器保存的行数的。即最大值为 500
+
+quickfix相关--------------->>>>>
+:cw可以进行quickfix的切换显示。
+:cn        // 切换到下一个结果
+:cp        // 切换到上一个结果
+
+cscope 命令--------------->>>>>
+add  : 添加一个新的数据库             (Usage: add file|dir [pre-path] [flags])
+find : 查询一个模式                   (Usage: find a|c|d|e|f|g|i|s|t name)
+       a: Find jkjkjkj to this symbol
+       c: Find functions calling this function
+       d: Find functions called by this function
+  *   e: Find this egrep pattern
+       f: Find this file
+  *   g: Find this definition
+       i: Find files #including this file
+  *   s: Find this C symbol 			
+       t: Find this text string
+
+    s: 查找C语言符号，即查找函数名、宏、枚举值等出现的地方
+    g: 查找函数、宏、枚举等定义的位置，类似ctags所提供的功能
+    d: 查找本函数调用的函数
+    c: 查找调用本函数的函数
+    t: 查找指定的字符串
+    e: 查找egrep模式，相当于egrep功能，但查找速度快多了
+    f: 查找并打开文件，类似vim的find功能
+    i: 查找包含本文件的文件
+
+我使用了GLOBAL,需要设置如下：  set csprg=gtags-cscope //https://www.gnu.org/software/global/manual/global.html
+添加数据库使用如下：          cs add GTAGS
+
+单词操作--------------->>>>>
+删除：dw、daw
+复制：yw,yaw
+r: 修改替换一个字母，并且替换过后仍然处于command模式
+s: 删除一个字母，并且删除过后处于edit模式
+cw: 正向修改一个单词；
+c2b: 逆向修改2个单词；
+c$: 修改光标所在的位置至本行末尾 ；（等价于C）
+c0: 修改光标所在的位置至本行首部；
+cc: 替换一行；
+R:替换无限多个在字母；
+~:大小写字母转换；
+
+标记功能--------------->>>>>
+ma表示标记该行为a；包括第几列的信息，都在标记a里。
+‘a表示跳转到标记a处；会跳转到标记a的行首。单引号’
+`a表示跳转到标记a处；会跳转到标记a的行，包括第几列。更精准。按键在波浪号处。
+
+粘贴功能 --------------->>>>>
+
+如果只是想使用系统粘贴板的话直接在输入模式按Shift+Inset（粘贴）就可以了，下面讲一下vim的粘贴板的基础知识。
+vim帮助文档里与粘贴板有关的内容如下：
+
+vim有12个粘贴板，分别是0、1、2、...、9、a、“、＋；用:reg命令可以查看各个粘贴板里的内容。在vim中简单用y只是复制到“（双引号)粘贴板里，同样用p粘贴的也是这个粘贴板里的内容；
+要将vim的内容复制到某个粘贴板，需要退出编辑模式，进入正常模式后，选择要复制的内容，然后按"Ny（注意带引号）完成复制，其中N为粘贴板号(注意是按一下双引号然后按粘贴板号最后按y)，
+例如要把内容复制到粘贴板a，选中内容后按"ay就可以了，有两点需要说明一下：
+“号粘贴板（临时粘贴板）比较特殊，直接按y就复制到这个粘贴板中了，直接按p就粘贴这个粘贴板中的内容；
++号粘贴板是系统粘贴板，用"+y将内容复制到该粘贴板后可以使用Ctrl＋V将其粘贴到其他文档（如firefox、gedit）中，同理，要把在其他地方用Ctrl＋C或右键复制的内容复制到vim中，需要在正常模式下按"+p；
+要将vim某个粘贴板里的内容粘贴进来，需要退出编辑模式，在正常模式按"Np，其中N为粘贴板号，如上所述，可以按"5p将5号粘贴板里的内容粘贴进来，也可以按"+p将系统全局粘贴板里的内容粘贴进来
+
+注意：在我这里，只有vim.gtk或vim.gnome才能使用系统全局粘贴板，默认的vim.basic看不到+号寄存器。安装vim.gnome使用apt-get install vim-gnome，然后vim自动会链接到vim.gnome。
+在命令行模式选择寄存器内容：CTRL+R SHIFT+寄存器名称
+
+下面是vim复制粘贴的基本命令：
+yy复制游标所在行整行。或大写一个Y。 
+2yy或y2y复制两行。 ㄟ ，请举一反三好不好！ :-) 
+y^复制至行首，或y0。不含游标所在处字元。 
+y$复制至行尾。含游标所在处字元。 
+yw复制一个word。 
+y2w复制两个字（单词）。 
+yG复制至档尾。 
+y1G复制至档首。 
+p小写p代表贴至游标后（下）。 
+P大写P代表贴至游标前（上）。
+
+复制单个字符
+首选进入正常模式（按ESC就行）
+然后按ｖ（指定粘贴板为"1v 引号不能少），进入visual方式，然后就可以移动方向键选中文本，然后按y，就拷贝完成，
+
+如果你要从光标处开始复制 4 个字符，可以按 4yl (复制光标后的)（"14yl）("110yl 后面10个字符),4yh(复制光标前的) ，就复制了4个字符到缓冲区中了，
+
+按下来就可以用 p （指定粘贴板为"1v 引号不能少）命令随便粘贴了（1为指下粘贴板名）
+
+
+整页翻页 ctrl-f ctrl-b
+f就是forword b就是backward
+翻半页
+ctrl-d ctlr-u
+d=down u=up
+滚一行
+ctrl-e ctrl-y
+zz 让光标所在的行居屏幕中央
+zt 让光标所在的行居屏幕最上一行 t=top
+zb 让光标所在的行居屏幕最下一行 b=bottom
+
+
+选中相同文本方法：
+用vim时，想高亮显示一个单词并查找的方发，将光标移动到所找单词.
+1: shift + "*"  向下查找并高亮显示
+2: shift + "#"  向上查找并高亮显示
+3: "g" + "d"    高亮显示光标所属单词，"n" 查找！
+
+
+快速查找 ------------->>>>>>
+	1 最快的方式是让光标停留在想要查找的单词的任意一个字母上面， 然后输入Shift + *  ，即可快速选中该单词，并且可以通过 n  或  N 进行上一个或下一个的匹配。
+	2 让光标停留在单词的第一个字母上， 然后输入yw拷贝该单词， 然后输入 / (Ctrl + R) 0 （即 /”0），回车， 就查找到了第一个匹配的单词， 并且可以通过 n  或  N 进行上一个或下一个的匹配。解释一下：Ctrl + r 是指使用寄存器 ， 你会发现先输入/ ， 然后输入 Ctrl + r , 会立刻变为 “ ， 即寄存器的前缀， 然后 ”0 就可以理解了吧？ 合起来就是 /“0， 就是查找刚才复制的那个单词
+	
+可视模式 ------------->>>>>>>>>
+v 		字符可视
+V		行可视
+ctrl+V	块可视(XP:ctrl+Q)
+2j 		选中当前行和随后2行
+J 		高亮文本合并一行，空格分隔，(gJ:无分隔)
+gv		重复前一次可视化模式时选中的文本
+o/O		选中的开始和结束切换
+d		删除高亮显示的文本
+D		删除一行,即使这一行中只有部分文本是高亮显示的
+y		复制高亮显示的文本
+Y		命令会复制整行
+c		高亮显示的文本删除并进入编辑模式
+C		删除一行文本并进入编辑状态。
+~		对高亮文本进行大小写转换。
+>		增加缩进，
+<		减少缩进。
+： 		对选定的范围进行操作，(:w 123.txt)(:sort对选中的文本进行排序)
+
+
+ 
+
+打印格式
+格式: echo -e "\033[字背景颜色;字体颜色m字符串\033[0m" 
+
+例如: 
+echo -e "\033[41;36m something here \033[0m" 
+
+其中41的位置代表底色, 36的位置是代表字的颜色 
+===============================================ANSI控制码的说明 
+\33[0m 关闭所有属性 
+\33[1m 设置高亮度 
+\33[4m 下划线 
+\33[5m 闪烁 
+\33[7m 反显 
+\33[8m 消隐 
+\33[30m -- \33[37m 设置前景色 
+\33[40m -- \33[47m 设置背景色 
+\33[nA 光标上移n行 
+\33[nB 光标下移n行 
+\33[nC 光标右移n行 
+\33[nD 光标左移n行 
+\33[y;xH设置光标位置 
+\33[2J 清屏 
+\33[K 清除从光标到行尾的内容 
+\33[s 保存光标位置 
+\33[u 恢复光标位置 
+\33[?25l 隐藏光标 
+\33[?25h 显示光标
+
+取消vim-devicons
+桌面版linux使用vim-devicons插件会出现乱码，需要设置终端字体为Droid Sans Mono for Powerline Nerd Font Complete，使用xshell等工具连接服务器linux的用户就没有必要使用vim-devicons了，可以在插件目录将vim-devicons目录删除，不然会导致NerdTree的缩进有问题。
+
+显示目录树 <F3>
+显示函数、变量、宏定义等 <F4>
+显示静态代码分析结果 <F5>
+.h .cpp 文件快速切换 <F2>
+转到申明 <, + u>
+转到定义 <, + i>
+打开包含文件 <, + o>
+Buffer切换 <Ctrl + P/Ctrl + N>
+光标位置切换 <Ctrl + O/Ctrl + I>
+模糊搜索文件 <Ctrl + f>
+Surround <ys{motion or text-object}{char}/cs{orig_char}{dest_char}/ds{char}>
+注释 <gcc/gcap/gc/,ca/,cA>
+DirDiff :DirDiff <dir1> <dir2>
+重复 .
+改变主题 <F10/F9>
+
+文件刷新或重载
+:e  		#reload file
+:e!		#force-discard your local changes and reload from the disk
+:diffthis   # :help FileChangedShell,   :help 'autoread'
+
+
+全局命令g ------------->>>>>>>>>
+[链接](http://einverne.github.io/post/2017/10/vim-global.html)
+删除一个文本文件中的所有带 ‘test’ 的行，以及这一行的前一行和后一行。
+    :g/test/-,/test/+ d
+
+
+[窗口管理ctrl+W]	(https://zhuanlan.zhihu.com/p/37733011)
+
+[t/f行跳转]			(https://www.jianshu.com/p/a46a89b460a9)
+
+这是一份VIM教程，可详细阅读。
+[重复上次修改]		(http://yyq123.blogspot.com/2017/03/vim-dot-command.html)

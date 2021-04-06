@@ -1,0 +1,4 @@
+﻿
+所以需要使用最新的硬件，以前的2440已经没有对应的dts了。
+【linux内核主线了解dts】https://blog.csdn.net/yuntongsf/article/details/51723805
+替代之前的Machine Type机制，目录：/arch/arm/boot/dts

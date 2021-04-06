@@ -1,0 +1,52 @@
+
+minicom使用    -------------->>>>
+https://www.cnblogs.com/zqb-all/p/9786836.html
+- 自动换行：    linewrap on/off
+- 日志保存：    capture on/off
+- 打开时间戳：  CTRL+A N
+～～～shell
+
+com() {
+    ports_USB=$(ls /dev/ttyUSB*)
+    ports_ACM=$(ls /dev/ttyACM* 2>/dev/null)
+    ports="$ports_USB $ports_ACM"
+    datename=minicom_$(date +%Y%m%d-%H%M%S)
+    select port in $ports; do
+        if [ "$port" ]; then
+            echo "You select the choice '$port'"
+            minicom -D "$port" -C /tmp/"$datename".log "$@"
+            break;
+        else
+            echo "Invalid selection"
+        fi
+    done
+}
+
+
+~~~
+
+OTA update
+{"method":"miIO.ota","params":{"app_url":"http://192.168.31.212/application_yiyang_dc42-v8-b0.0.1.bin"}}
+
+
+{"app_url":"http://192.168.31.212/application_yiyang_dc42-v8-b0.0.1.bin"}
+{"app_url":"http://192.168.31.212/aapplication_toukui_offline-v14-b0.0.1.bin"}
+
+
+form network
+A:
+	dataset init new
+	dataset commit active
+	ifconfig up
+	thread start
+	state(a few seconds )
+	dataset(check network parameters, check it's channel num / masterKey)
+B: attach a second node (device B) to the network
+	dataset channel 18
+	dataset masterkey 1234567
+	dataset commit active
+	ifconfig up
+	thread start
+	ipaddr
+	ping fe80:0:0:0:123
+

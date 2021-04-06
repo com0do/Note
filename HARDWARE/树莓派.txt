@@ -1,0 +1,9 @@
+﻿
+双网络设置方法(/etc/dhcpcd.conf)：
+调整优先级 --> 设置固定IP
+interface eth0
+static ip_address=192.168.137.10/24
+static routers=192.168.137.1
+metric 300
+interface wlan0
+metric 300

@@ -1,0 +1,44 @@
+﻿gdb 
+
+用gdb查看内存
+
+格式: x /nfu <addr>
+
+说明
+x 是 examine 的缩写
+
+n表示要显示的内存单元的个数
+f表示显示方式, 可取如下值
+	x 按十六进制格式显示变量。
+	d 按十进制格式显示变量。
+	u 按十进制格式显示无符号整型。
+	o 按八进制格式显示变量。
+	t 按二进制格式显示变量。
+	a 按十六进制格式显示变量。
+	i 指令地址格式
+	c 按字符格式显示变量。
+	f 按浮点数格式显示变量。
+
+u表示一个地址单元的长度
+	b表示单字节，
+	h表示双字节，
+	w表示四字节，
+	g表示八字节
+	
+gdb coredump分析代码崩溃具体位置方法:
+
+      近期参考臧工的方法排查miracast异常崩溃问题时，用gdb调试coredump文件可以得到程序crash点，但在mstar单板上跑gdb symbols时会存在trip动作，执行bt或者where无法追踪出具体代码行位置，为了能更精确的追踪代码异常崩溃点，可以尝试如下方法，供各位同事参考：
+
+1).将生成的coredump文件解压；
+
+2).将coredump上传到云办公环境虚拟机并放至出异常程序文件目录下，本示例是tvmain出异常，所以放在/home/XXX/MstarCode_0307/output/hl1+hl1_hisense+master/loewe/bin路径下；
+
+3).利用每个人都有的虚拟机环境进行交叉gdb调试，本示例的崩溃原因是由tvmain导致的，在虚拟机环境下首先执行 arm-none-linux-gnueabi-gdb  tvmain；
+
+4).指定出现异常程序执行文件路径：set  solib-absolute-prefix /home/XXX/MstarCode_0307/output/hl1+hl1_hisense+master/loewe/bin
+
+5).指定出现异常的依赖库路径：set  solib-search-path /home/XXX/MstarCode_0307/device/mstar/MI_project/out/macan/arm-gnueabi/symbols/mslib ；
+
+6).执行core Coredump.1679；
+
+7).执行bt，就可以看到出异常的具体代码位置；

@@ -1,0 +1,52 @@
+﻿C/C++ 参考
+https://zh.cppreference.com/w/cpp
+https://en.cppreference.com/w/cpp
+http://www.cplusplus.com/reference/string/string/
+
+
+steady_time 使用，写的很好
+http://blog.csdn.net/u013600225/article/details/51505246
+
+g++ dump.cpp -lboost_thread -lboost_date_time -lboost_system -lboost_chrono
+
+
+enable_shared_from_this:
+一、场合：当类A被share_ptr管理，且在类A的成员函数里需要把当前类对象作为参数传给其他函数时，就需要传递一个指向自身的share_ptr
+1 为什么不直接传递this指针
+	每个shared_ptr都认为自己是对象仅有的所有者，使用智能指针的初衷就是为了方便资源管理，如果在某些地方使用智能指针，某些地方使用原始指针，很容易破坏智能指针的语义，从而产生各种错误。
+2 可以直接传递share_ptr<this>么
+	不能，因为这样会造成2个非共享的share_ptr指向同一个对象，未增加引用计数导对象被析构两次。
+二.为何会出现这种使用场合
+       因为在异步调用中，存在一个保活机制，异步函数执行的时间点我们是无法确定的，然而异步函数可能会使用到异步调用之前就存在的变量。为了保证该变量在异步函数执期间一直有效，我们可以传递一个指向自身的share_ptr给异步函数，这样在异步函数执行期间share_ptr所管理的对象就不会析构，所使用的变量也会一直有效了（保活）。
+       
+两个if与&&的区别：
+int waitWrite = 9, refCount = -1, waitRead = 1;
+if(waitWrite > 0){
+	if(refCount == 0) cout << "emiter signal to writer" << endl;
+}else if(waitRead > 0){
+	cout << "broadcast signal to reader" << endl;
+}
+
+if(waitWrite > 0 && refCount == 0){
+	cout << "error: emiter signal to writer" << endl;
+}else if(waitRead > 0){
+	cout << "error:broadcast signal to reader" << endl;
+}
+
+result_of :  	ThreadPool------------------>>>>
+https://blog.csdn.net/dqsjqian/article/details/82316472
+https://blog.csdn.net/rock_joker/article/details/80309857  
+http://www.cplusplus.com/reference/type_traits/result_of/?kw=result_of
+int fn(int) {return int();}
+typedef result_of<decltype(fn)&(int)>::type A;
++++++ std::future<typename std::result_of<Type(Args...)>::type> = std::future<decltype(task(args...))> ++++++++++
+tmeplate<calss F, class... Args> struct cc_result_of {
+	typedef decltype(declval<F>()(declval<Args>()...)) type; 
+}
+template<class F, class... Args> auto A_func(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>{
+	using return_type = typename std::result_result_of<F(Args...)>::type;
+	typedef decltype(declval<F>()(declval<Args>()...)) return_value;
+	typedef decltype(f(args...)) return_value_2;
+}
+
+

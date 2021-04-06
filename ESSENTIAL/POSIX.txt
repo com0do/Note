@@ -1,0 +1,91 @@
+﻿
+timer_create使用
+https://linux.die.net/man/2/timer_create
+
+必须链接rt。
+
+调度策略 pthread_attr_setschedpolicy(&attr,policy);
+1、SCHED_OTHER：普通任务调度策略。
+2、SCHED_FIFO：实时任务调度策略，先到先服务。一旦占用cpu则一直运行，直到有更高优先级任务到达或自己放弃。
+3、SCHED_RR：实时任务调度策略，时间片轮转。当任务的时间片用完，系统将重新分配时间片，并置于就绪队列尾。放在队列尾，保证了所有具有相同优先级的RR任务的调度公平。SCHED_OTHER是不支持优先级使用的,而SCHED_FIFO和SCHED_RR支持优先级的使用,他们分别为1和99,数值越大优先级越高.大的权值对应高的优先级! 系统支持的最大和最小的优先级值可以用函数：sched_get_priority_max和sched_get_priority_min得到！
+优先级
+struct sched_param param;prarm.sched_priority = prio;
+phtread_attr_setschedprarm(&attr,&prarm);
+// 默认是PTHREAD_INHERIT_SCHED = 0;
+pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
+设置堆栈大小，且系统来管理堆栈
+pthread_attr_setstacksize(&attr,size);
+设置堆栈预警缓冲区
+pthread_attr_setguardsize(&attr,&size);
+获取运行中的线程属性
+pthread_getattr_np(pthread_self(),&attr);
+获取优先级
+pthread_attr_getschedparam(&attr,&prio);
+
+//------------ID-------->>>
+在linux下每一个进程都一个进程id，类型pid_t，可以由getpid（）获取。POSIX线程也有线程id，类型pthread_t，可以由pthread_self（）获取，线程id由线程库维护。但是各个进程独立，所以会有不同进程中线程号相同节的情况。那么这样就会存在一个问题，我的进程p1中的线程pt1要与进程p2中的线程pt2通信怎么办，进程id不可以，线程id又可能重复，所以这里会有一个真实的线程id唯一标识，tid。glibc没有实现gettid的函数，所以我们可以通过linux下的系统调用syscall(SYS_gettid)来获得.
+获取进程ID：getpid()
+获取线程ID：gettid()  syscall(SYS_gettid)
+获取进程标识：pthread_self()
+
+// --------------最佳实践（平台）-------------------->>>>
+pthread_attr_init(&attr);
+phtread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED);
+pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+phtread_attr_setname_cui(&attr,"niuability“)
+prctl(PR_SET_NAME,"shit"); 						//设置名字
+setpriority(PRIO_PROCESS,syscall(SYS_gettid),7);	//设置优先级 -20~19,越低优先级越高，默认0，超级用户才可以低于0.
+
+// --------------最佳实践（pthread_cancel）-------------------->>>>
+一个线程可以调用pthread_cancel终止同一进程中的另一个线程，但是值得强调的是：同一进程的线程间，pthread_cancel向另一线程发终止信号。系统并不会马上关闭被取消线程，只有在被取消线程下次系统调用时，才会真正结束线程。或调用pthread_testcancel，让内核去检测是否需要取消当前线程。被取消的线程，退出值为PTHREAD_CANCELED.
+
+// --------------最佳实践（setPriority）-------------------->>>> https://www.cnblogs.com/jacklikedogs/p/4030048.html
+SCHED_OTHER 调度策略		     -------------------->>>> https://blog.csdn.net/maray/article/details/2900689
+struct sched_param sparam;
+int schedParamResult = 0;
+memset(&sparam,0,sizeof(struct sched_p));
+ sparam.sched_priority = newPrio;
+pthread_attr_setinheritsched(&attr,PTHREAD_EXPLICIT_SCHED); 	
+//设置线程的继承性：继承性决定调度的参数是从创建的进程中继承还是使用在 schedpolicy和schedparam属性中显式设置的调度信息。
+pthread_attr_setschedpolicy(&attr,SCHED_RR);
+schedParamResult = pthread_attr_setschedparam(&attr,&sparam);
+
+// --------------最佳实践（MMAP）-------------------->>>> https://www.cnblogs.com/huxiao-tee/p/4660352.html
+MAP_FIXED标志的一个特性是：如果你指定的地址和已有的线性区重叠，那么就抛弃已有的线性区映射。cool，but dangerous...
+
+// --------------最佳实践（CLONE）-------------------->>>> https://www.cnblogs.com/wanghetao/archive/2011/11/06/2237931.html
+ CLONE_PARENT  创建的子进程的父进程是调用者的父进程，新进程与创建它的进程成了“兄弟”而不是“父子”
+ CLONE_FS          子进程与父进程共享相同的文件系统，包括root、当前目录、umask
+ CLONE_FILES     子进程与父进程共享相同的文件描述符（file descriptor）表
+ CLONE_NEWNS  在新的namespace启动子进程，namespace描述了进程的文件hierarchy
+ CLONE_SIGHAND  子进程与父进程共享相同的信号处理（signal handler）表
+ CLONE_PTRACE  若父进程被trace，子进程也被trace
+ CLONE_VFORK    父进程被挂起，直至子进程释放虚拟内存资源
+ CLONE_VM          子进程与父进程运行于相同的内存空间
+ CLONE_PID         子进程在创建时PID与父进程一致
+ CLONE_THREAD   Linux 2.4中增加以支持POSIX线程标准，子进程与父进程共享相同的线程群
+下面的例子是创建一个线程（子进程共享了父进程虚存空间，没有自己独立的虚存空间不能称其为进程）。父进程被挂起当子线程释放虚存资源后再继续执行。
+
+// --------------最佳实践（time）-------------------->>>> https://blog.csdn.net/zniahfag/article/details/53489970
+RTC/OSC
+	RTC,Real Time Clock，真实时钟，也叫做CMOS时钟，又叫walltime
+	OSC，Operation System Clock，系统时钟。在开机时操作系统取得RTC中的时间数据来初始化OSC，之后完全由完全由操作系统控制。
+	当设置OSC时间时,RTC时间不会自动同步,待关闭或者重启时,操作系统会自动同步OSC时间到RTC, 操作系统每隔一个固定时间会刷新或校正RTC中的信息,当操作系统关机时,时间交由主板上的RTC去记时,因为主板上的CMOS有锂电池供电. 
+	当再次开机时,操作系统会去主板RTC上获取时间。
+CLOCK_REALTIME/CLOCK_REALTIME
+	CLOCK_REALTIME,真实时间，walltime，即RTC，会被settime()/settimeofday()影响。
+	CLOCK_MONOTONIC,单调时间，即从某个时间点开始到现在过去的时间。用户不能修改这个时间，但是当系统进入休眠（suspend）时，CLOCK_MONOTONIC是不会增加的。不会被settime()/settimeofday()影响。
+	CLOCK_PROCESS_CPUTIME_ID:本进程到当前代码系统CPU花费的时间  
+	CLOCK_THREAD_CPUTIME_ID:本线程到当前代码系统CPU花费的时间
+NTP的影响
+	如果NTP调整时间时调用了adjtimex()接口，会同时对CLOCK_REALTIME和CLOCK_MONOTONIC都有影响。
+CLOCK_MONOTONIC_RAW
+	与monotonic时间类似，也是单调递增的时间，但raw monotonic time不会受到NTP时间调整的影响
+int clock_gettime(clockid_t clk_id, struct timespec *tp);
+	clk_id为CLOCK_MONOTONIC，则返回系统启动后秒数和纳秒数。
+	clk_id为CLOCK_REALTIME，则返回RTC
+syscall(SYS_clock_gettime, CLOCK_MONOTONIC_RAW, &monotonic_time) 
+	该函数提供了真正意义上的单调递增时间
+// --------------最佳实践（WHO KILL ME）-------------------->>>> http://blog.chinaunix.net/uid-20662820-id-5326690.html
+#auditctl -a exit,always -S kill -F a0=0x6e9
+

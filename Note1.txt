@@ -1,0 +1,66 @@
+﻿
+
+
+ceiling.c
+	配置双路IO对应的不同的定时器	
+	set_pwm_max_value(MIXER_DUTY_MAX);
+	set_min_pwm(FALSE);
+	set_bright_pwm_map(QUADRATIC);
+lightmixing.c
+	slix_bri_map();
+	nox_dl_cct_data = {};
+	FUNCTION_SETTING(trans, white_dual_trans_nonsteps);
+yglc_effect.h
+	yglc_io_def_t : actime_shadow;
+yglc_effect.c
+	yglc_pwm_output();
+	yglc_io_init();
+
+
+
+	 { "id": 1, "method": "set_bright", "params":["on", "smooth", 500]}
+
+ceiling.c
+	yglc_new_trans_manager();
+
+yglc_effect.c
+	channel_callback = {
+		.on_flow_peek				= yglc_unit_on_flow_peek,
+		.on_flow_end				= yglc_unit_on_flow_end,
+		.on_channel_state_change	= yglc_unit_on_channel_state_chage,
+	}
+
+	yglc_light_controller_trans_next()
+		DEBUG---> INFO
+	yglc_trans_manager_start_transition()
+		DEBUG ---> INFO
+	yglc_light_channel_set_bright() 
+		yglc_light_channel_set_color()
+			effect_callback = {
+				.effect_start_cb	= yglc_light_channel_on_effect_start,
+				.effect_next_cb		= yglc_light_channel_on_effect_next,
+				.effect_done_cb		= yglc_light_channel_on_effect_done,
+			}
+			yglc_light_effect_start()
+				yglc_light_effect_next_trans(TRUE)
+					trans_callback = {
+						.trans_done_cb	= yglc_light_effect_on_trans_done,
+						.trans_next_cb	= NULL
+					}
+					effect_next_cb()
+					yglc_trans_manager_start_transition()   *
+					effect_start_cb()
+
+
+				
+
+--------------------------
+		BT_gateway / IR / LOW_POWER
+
+		#ifdef BLE_REMOTE_CONTROLLER_SUPPORT
+		yglc_mible_ctrl_init();
+		#endif//BLE_REMOTE_CONTROLLER_SUPPORT
+
+		#if MIBLE_ENABLE
+
+		BLE_GATEWAY_SUPPORT

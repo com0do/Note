@@ -1,0 +1,31 @@
+﻿
+端口占用问题------------------->>>>>>>
+（1）查看程序对应的进程号： ps -ef | grep 进程名字
+（2）查看进程占用端口号：netstat -anp | grep pid
+linux 下查看端口号所使用的进程号：
+（1）使用 lsof 命令：lsof -i:端口号
+
+
+
+tcp_nodelay：禁止nagle算法，有需要发送的就立即发送，比较常见
+tcp_cork：它是一种加强的nagle算法，过程和nagle算法类似，都是累计数据然后发送。但它没有 nagle中1的限制，所以，在设置cork后，即使所有ack都已经收到，但我还是不想发送数据，我还想继续等待应用层更多的数据，所以它的效果比nagle更好。效率上与Nagle算法相比，Nagle算法主要避免网络因为太多的小包(协议头的比例非常之大)而拥塞，而CORK算法则是为了提高网络的利用率，使得总体上协议头占用的比例尽可能的小
+ 
+tcp_cork使用方法
+int on = 1; 
+setsockopt (fd, SOL_TCP, TCP_CORK, &on, sizeof (on)); /* 设置cork */ 
+write (fd, …); 
+...
+sendfile (fd, …); 
+… 
+on = 0; 
+setsockopt (fd, SOL_TCP, TCP_CORK, &on, sizeof (on)); /* 拔去塞子 ，发送数据*/ 
+
+
+字节序相关 ------------------->>>>>>>
+---- 旧 ：不支持IPV6
+inet_addr	 	函数需要一个字符串作为其参数，该字符串指定了以点分十进制格式表示的IP地址（例如：192.168.0.16）。而且inet_addr函数会返回一个适合分配给S_addr的u_long类型的数值。
+Inet_ntoa  	函数会完成相反的转换，它接受一个in_addr结构体类型的参数并返回一个以点分十进制格式表示的IP地址字符串。
+---- 新 presentation <---> numeric
+include<arpa/inet.h>
+int		 	inet_pton(int family, const char *strptr, void *addrptr);
+const char *	inet_ntop(int family, const void *addrptr, char *strptr, size_t len);

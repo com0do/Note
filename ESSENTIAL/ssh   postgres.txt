@@ -1,0 +1,30 @@
+﻿
+登陆postgressql
+sudo -u posgres psql
+alter user postgres with password 'cui';
+
+exit
+
+sudo passwd -d postgres
+sudo -u postgres passwd
+
+create user cuixingang with password 'cui';
+create database cdata owner cuixingang;
+grant all privileges on database cdata to cuixingang;
+psql -U cuixingang -d cdata -h 127.0.0.1 -p 5432
+
+
+
+putty.exe -load "Poseidon" -ssh -l cxg -pw cui
+
+
+n=0; while [ $n -lt 100000 ] ;do inputkeyevent 4 >/var/local/inputkey.txt 2 >&1 ; echo "$$------------------>>>> $((++n)) times"; done   &
+
+while true; do ps -o "user,comm,pid,ppid,vsz,stat,rss,args"; cat /proc/meminfo; cat /sys/kernel/debug/mali/gpu_memory; cat /proc/slabinfo|awk '{print $1,$3*$4/1024 "K"}' ; sleep 2;done  >/var/local/ps.txt 2>&1 &
+
+vscode
+	CTRL+SHIFT+P 	show all commands
+	CTRL+P 			go to file
+	CTRL+SHIFT+F	find in files
+	F5 				Start debug
+	CTRL+`			Toggle Terminal

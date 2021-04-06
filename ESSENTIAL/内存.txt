@@ -1,0 +1,24 @@
+﻿
+进程内存分布：
+	环境变量区域
+	命令行参数
+	栈
+	共享库和mmap映射区
+	堆
+	bss段
+	data段
+	text段
+
+
+
+5 Coredump文件解析
+cat /var/local/message(查看Coredump文件号)
+gzip -d  Coredump.1312.gz
+/usr/local/bin/gdb /usr/local/bin/tvmain Coredumpxxx
+set sysroot
+bt(打印回调栈)
+
+
+类内存分布
+/d1 reportAllClassLayout   	打印全部
+reportSingleClassLayoutBase 	打印Base类的内存分布

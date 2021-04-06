@@ -1,0 +1,72 @@
+﻿node /home/pi/wsp/jsmpeg/stream-server.js kay 9092 9094 &
+ 因客户需求，需要开机就能在浏览器中看到实时视频，而自己设计观看实时视频的方案是：使用ffmpeg直接解码rtsp流，将解码结果通过http发送到nodejs服务器，nodejs服务器使用Websocket发送给客户端，客户端使用canvas实时绘制图像。
+	   因此，在能观看实时视频之前需要添加ffmpeg视频解码和nodejs服务器的开机启动。最简单的做法应该是将命令直接放到/etc/rc.local文件 exit 0命令之前，或者将命令放到/etc/profile文件里面，当然，我也确实这样做过，结果发现放在/etc/profile里面时，如果有这个命令一直在运行的话，每次打开一个终端都会弹出运行这条命令，并且该命令会一直阻塞进程而导致后续命令不会得到执行，并且这条命令也有可能运行失败，放在/etc/rc.local中时，会发现nodejs可以运行，而ffmpeg不能运行，并且运行结果与预期的相差甚远。没办法，只能把开机启动项做成服务了，做成服务可以使结果在预料之中，差别不是很大。
+	   做开机服务的基本步骤：
+1）创建并编辑一个服务文件，命名为node_streamer,内容如下：
+#! /bin/sh
+#  /etc/init.d/node_streamer
+# starts the node_streamer service
+### BEGIN INIT INFO
+# Provides:          node_streamer
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# X-Interactive:     true
+# Short-Description: Start/stop node_streamer application server
+### END INIT INFO
+
+SERVICE_NAME=node_streamer
+PID_PATH_NAME=/tmp/$SERVICE_NAME-pid
+case $1 in
+    start)
+	echo "Starting $SERVICE_NAME ..."
+	if [ ! -f $PID_PATH_NAME ]; then
+	    node /home/pi/wsp/jsmpeg/stream-server.js kay 9092 9094 &
+	    echo "$SERVICE_NAME started ..."
+	else
+	    echo "$SERVICE_NAME is already running ..."
+	fi
+	;;
+    stop)
+	if [ -f $PID_PATH_NAME ]; then
+	    PID=$(cat $PID_PATH_NAME);
+	    echo "$SERVICE_NAME stoping ..."
+	    sudo kill $PID;
+	    echo "$SERVICE_NAME stopped ..."
+	    sudo rm $PID_PATH_NAME
+	else
+	    echo "$SERVICE_NAME is not running ..."
+	fi
+	;;
+    restart)
+	if [ -f $PID_PATH_NAME ]; then
+	    PID=$(cat $PID_PATH_NAME);
+	    echo "$SERVICE_NAME stopping ...";
+	    sudo kill $PID;
+	    echo "$SERVICE_NAME stopped ...";
+	    sudo rm $PID_PATH_NAME
+	    echo "$SERVICE_NAME starting ..."
+	    node /home/pi/wsp/jsmpeg/stream-server.js kay 9092 9094 &
+	    echo $! > $PID_PATH_NAME
+	    echo "$SERVICE_NAME started ..."
+	else
+	    echo "$SERVICE_NAME is not running ..."
+	fi
+	;;
+esac 
+2)将node_streamer服务放到/etc/init.d下
+3）若担心node_streamer有语法错误或者命令不能运行，可以使用命令 sudo cp node_streamer node_streamer.sh 将node_streamer的内容复制到node_streamer.sh文件下，
+然后使用sudo service node_streamer.sh start来查看服务是否能启动。
+
+4）若能可以，先删除刚刚创建的node_streamer.sh文件，运行命令
+   sudo update-rc.d node_streamer defaults
+5)开机后使用命令 sudo service node_streamer status查看node_streamer服务运行状态
+6）若要删除服务，则可以先sudo service node_streamer stop,再 sudo update-rc.d -f node_streamer remove
+
+7)若要再添加其它服务，则可以修改nodestreamer文件，重复执行上面的2-6步操作，将所有node_stteamer换成你所需要的服务名称，将
+   node /home/pi/wsp/jsmpeg/stream-server.js kay 9092 9094
+
+————————————————
+版权声明：本文为CSDN博主「huangzhichang13」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/huangzhichang13/article/details/53883408
