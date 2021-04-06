@@ -1,0 +1,11 @@
+﻿
+当要在64位ubuntu上安装生成32位的编译代码时，我用了如下指令
+gcc test.c -o test -m32
+于是就有了题目所示的报错
+/usr/include/features.h:374:25: fatal error: sys/cdefs.h: 没有那个文件或目录 # include <sys/cdefs.h>
+
+于是在终端下
+sudo apt-get install lib32readline-gplv2-dev
+再执行上述gcc命令就行了
+g++ 的要安装
+sudo apt-get install gcc-4.8-multilib g++-4.8-multilib

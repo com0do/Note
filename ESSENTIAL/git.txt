@@ -1,0 +1,177 @@
+﻿
+http://blog.csdn.net/free_wind22/article/details/50967723
+
+//配置
+git config --global user.name
+git config --global user.email
+
+git config --get user.name
+git config --get user.email
+
+git reset --mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和add信息
+git reset --soft：回退到某个版本，只回退了commit的信息。如果还要提交，直接commit即可
+git reset  --hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容
+
+//提交或丢弃
+git checkout -- test.txt 		//丢弃更改
+git add test.txt 			//提交更改到缓存区
+git reset HEAD test.txt  		//撤销缓存区的提交，恢复到默认版本
+
+//查看版本
+git log
+git log --pretty=oneline
+
+//版本回退
+git reset --hard HEAD^ 		//note : HEAD^ 之前的版本
+git reset --hard HEAD^^
+git reset --hard HEAD~100
+git reflog  				//查看所有版本号：7位字符
+git reset --hard 版本号
+
+//创建分支
+git checkout branch_my  	//创建分支
+
+//创建本地密钥
+ssh-keygen  -t rsa –C “youremail@example.com”
+
+https://github.com/com0do/supreme-fiesta
+
+//-------以下是开玩笑的 ---------
+git remote add origin git@github.com:youName/youRepo.git
+//之后进入.git，打开config，这里会多出一个remote "origin"内容，这就是刚才添加的远程地址，也可以直接修改config来配置远程地址
+git clone /path/to/repository
+git clone username@host:/path/to/repository
+//推送更改
+git push origin master   //可以把mater换成你想要推送的任何分支
+//-------------不开玩笑了-----------
+
+git remote add origin https://github.com/you_account/you_repository.git
+git push -u origin mater
+git clone https://github.com/your_account/your_repository
+
+//创建并切换分支
+git checkout -b dev  		//-->git branch dev + git checkout dev
+//查看当前分支
+git branch
+//合并分支
+git merge 分支
+//删除分支
+git branch -d 分支
+//隐藏当前工作现场
+git stash
+git stash show -p stash@{0}
+
+//从远程库克隆时候，实际上Git自动把本地master分支和远程master分支对应起来了，并且远程库的默认名称是origin。
+git remote 			//查看远程库的信息
+git remote -v
+
+http://www.yiibai.com/git/git_push.html 		//git push的介绍
+git push origin master 		//推送master分支  
+git push -u origin master 	//-u指定一个默认主机，以后可以直接git push。
+git push origin dev 			//推送dev分支
+git push --set-upstream origin master 		//设置远程master分支和本地master默认连接
+
+
+不带任何参数的git push，默认只推送当前分支，这叫做simple方式。此外，还有一种matching方式，会推送所有有对应的远程分支的本地分支。Git 2.0版本之前，默认采用matching方法，现在改为默认采用simple方式。如果要修改这个设置，可以采用git config命令。
+
+$ git config --global push.default matching
+# 或者
+$ git config --global push.default simple
+
+git config commit.template ~/test/MSTAR_template
+
+//小伙伴也想干活
+git clone https://you_known_the_addr
+git checkout -b dev origin/dev 		//把远程的origin的dev分支--》本地dev分支
+
+git log --author cui --pretty=format:"%h : %an, %ar"
+
+
+Introduction] repo sync同步代码不全解决办法 - 蔡俊鹏 
+创建： 蔡俊鹏，最新修改于： 八月 15, 2017 
+
+同步远程仓库中的代码需要使用repo sync命令，将远程的修改同步到本地。
+但是当远程仓库中有新增、删除、改名文件的情况出现时，sync命令就会出现问题：
+不能讲修改过的文件同步到本地，造成本地代码和远程仓库不一致。
+为了解决这个问题，可以通过git pull命令，强制将远程仓库的修改拉到本地。
+但是一般来讲repo仓库中由大量的git库构成，一个个的查找各个git库的改动不太现实。
+所以可以使用repo中的git命令组合完成全部拉取远程git库，如下：
+repo forall -c git pull
+这条命令可以将repo中的所有git库全部拉到本地，进而实现同步远程仓库代码的目的。
+
+make isdb_eng-pack 2>&1|tee packlog.txt
+make isdb_eng-all 2>1&|tee packlog.txt
+
+清空所有本地分支
+repo forall -c “git branch | sed -e /^*/d | xargs git branch -D”
+更新到最新版本
+repo forall -c "git reset --hard HEAD && git clean -dfx"
+
+下载新代码后必须要做的2件事
+repo start temp_b --all	##新建分支
+make all 				##整体编译依次
+
+如果有冲突，手动解决重提后使用的提交命令
+cherry pick --->>
+git status
+fix conflict---->>
+git commit -c FETCH_HEAD
+
+清空代码
+git reset --hard HEAD && git clean -dfx
+
+repo显示和删除分支
+repo branches
+repo checkout temp_name
+repo abandon temp_name
+
+如何导出差异--------------------------------->>>>>>
+git diff 456bcb 93593a --name-only | xargs -t -i{} cp --parents {} ~/update
+	xargs -t -i{} cp --parents {} ../update 的参数说明
+		-t：显示执行的命令
+		-i{}：将前面的输入作为一个占位符 {} 在后面使用
+
+
+搜索commit message/contents:
+https://stackoverflow.com/questions/1337320/how-to-grep-git-commit-diffs-or-contents-for-a-certain-word
+If you want to find all commits where commit message contains given word, use
+$ git log --grep=word
+If you want to find all commits where "word" was added or removed in the file contents (to be more exact: where number of occurences of "word" changed), i.e. search the commit contents, use so called 'pickaxe' search with
+$ git log -Sword
+In modern git there is also
+$ git log -Gword
+to look for differences whose added or removed line matches "word" (also commit contents).
+Note that -G by default accepts a regex, while -S accepts a string, but can be modified to accept regexes using the --pickaxe-regex.
+
+
+
+如何提交代码
+repo forall -c 'git reset --hard HEAD' 		
+repo sync -cj8
+repo start tmep_name --all 	
+repo upload . -t --cbr 			//only this command could use in local path !!
+
+如何解决sync失败 			
+repo sync -cdl . 			//反checkout，将本地镜像仓库和本地工作分支分离
+repo sync -cj32 . 			//同步远端仓库到本地镜像仓库
+repo checkout  temp_b . 	//将本地镜像仓库和本地分支连接
+git branch 				//检查是否checkout分支成功
+repo rebase .				//变基并解决冲突
+至此可正常sync
+repo sync -cdl . && repo sync -cj32 . && repo checkout temp_b . && repo rebase .
+
+如何分组：https://blog.csdn.net/zhandoushi1982/article/details/18559907
+repo init -u ssh://dmtgerrit2.hisense.com:29418/MTK5658DB/tv/manifest -b hamming-dev --repo-url=ssh://dmtgerrit2.hisense.com:29418/git-repo -g all,-notdefault,tools,-shit --depth=5
+
+如果切repo分支
+cd .repo/manifests && git branch -a | cut -d / -f 3 && cd -
+repo init -b branch_name   ## git checkout branch_name
+repo sync -cj32
+repo start temp_b --all
+
+跨分支提交：本地分支A，远程分支B，cherry-pick分支B的patch到本地，更改后amend，最后push
+git push hisense local_branch_name:refs/for/hisense-mstar_6886-U4
+
+ 避免NTFS文件权限变更引起的修改 	
+ core.fileMode : Tells Git if the executable bit of files in the working tree is to be honored.
+ git config core.fileMode false 	// 可加入全局设置 --global，但会影响到脚本、程序的执行权限。

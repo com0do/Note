@@ -1,0 +1,29 @@
+﻿
+
+文件遍历 ---------->>>>
+
+if [ -d /etc/profile.d ];then
+	for i in /etc/profile.d/*.sh; do
+		if [ -r $1 ]; then
+			. $1
+		fi
+	done
+	unset i
+fi
+
+
+大小写转换  ---------->>>>
+1
+typeset -u mac
+mac=abc
+2
+echo $mac|tr '[:upper:]' '[:lower:]' 
+3
+需要是bash,4.0版本以上
+echo ${var^} 
+# 把变量中的所有小写字母，全部替换为大写
+echo ${var^^}   
+# 把变量中的第一个字符换成小写
+echo ${var,}
+# 把变量中的所有大写字母，全部替换为小写
+echo ${var,,}

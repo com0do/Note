@@ -1,0 +1,5 @@
+﻿
+每次整环境都踩坑，还是来一次笔记吧！
+https://ubuntu.com/tutorials/install-and-configure-samba#1-overview
+https://www.jianshu.com/p/c4579605a737
+XP可能需要重启，Ubuntu下 samba服务也要重启。

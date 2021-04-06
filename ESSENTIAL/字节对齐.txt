@@ -1,0 +1,37 @@
+﻿
+
+字节对齐问题
+
+可能用到的宏：offsetof，定义在stddef.h
+
+
+知乎上面的回答特别好：https://www.zhihu.com/question/28958350
+
+__attribute__ ((packed))    	压缩式存储
+__attribute__ ((aligned(4)))	对齐式存储
+
+试验一下结构体，看有什么不同。
+
+#define SET_PARA_CHARGE_PROTECT_LEN 	sizeof(struct s_charge_protect_set)
+struct __attribute__ ((packed)) s_charge_protect_set{
+    uint8_t fan_start_temp;
+    uint8_t fan_fullspeed_temp;
+    uint8_t fan_stop_temp;
+    int8_t 	fan_lowest_temp;
+    uint8_t fan_highest_temp;
+    uint8_t charge_stop_soc;
+    union __attribute__ ((packed)) {
+            uint8_t uint8;
+            struct {
+                uint8_t door_access_switch:1;
+                uint8_t over_power_protect:1;
+                uint8_t charge_stop_soc_switch:1;
+                //uint8_t alarm_popups:1;
+                uint8_t :5;
+            }bit;
+    }__attribute__ ((packed));
+}__attribute__ ((packed));
+
+
+异或逻辑：相同则0，不同则1；
+与非逻辑：都为1则0，其他全是1

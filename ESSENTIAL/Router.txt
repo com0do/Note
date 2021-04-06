@@ -1,0 +1,11 @@
+﻿
+Vlan:
+  	端口规划 --> 新建2个Vlan (1:Lan, 100:Wlan)  --> 设置PVID (100,1,1,1,1,1,1,1)
+  	
+自动获取ip
+	$sudo dhclient -r //释放ip
+	$sudo dhclient     //获取IP 手动使用DHCP自动获取IP参数 dhclient
+ 或者：
+ 	vi /etc/networking/interfaces
+ 	auto eth0
+	iface eth0 inet dhcp。

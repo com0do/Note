@@ -1,0 +1,157 @@
+﻿
+
+CFLAGS :表示用于 C 编译器的选项，
+ 	指定头文件（.h文件）的路径，如：CFLAGS=-I/usr/include -I/path/include
+ 	
+CXXFLAGS 表示用于 C++ 编译器的选项。
+
+LDFLAGS: 指定库文件的位置。
+	用法：LDFLAGS=-L/usr/lib -L/path/to/your/lib
+	
+LIBS：告诉链接器要链接哪些库文件，如LIBS = -lpthread -liconv
+
+LDFLAGS告诉链接器从哪里寻找库文件，LIBS告诉链接器要链接哪些库文件。
+
+有时候LDFLAGS指定-L虽然能让链接器找到库进行链接，但是运行时链接器却找不到这个库，如果要让软件运行时库文件的路径也得到扩展，那么我们需要增加这两个库给"-Wl,R"：
+
+LDFLAGS = -L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib
+
+如果在执行./configure以前设置环境变量export LDFLAGS="-L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib" ，注意设置环境变量等号两边不可以有空格，而且要加上引号（shell的用法）。那么执行configure以后，Makefile将会设置这个选项，链接时会有这个参数，编译出来的可执行程序的库文件搜索路径就得到扩展了。
+
+
+-------------------->>>> -gc-sections
+[LINK](https://blog.csdn.net/wuu19/article/details/100725025)
+-  在编译C、Ada源文件（C++也可以），在gcc/g++编译选项中增加-ffunction-sections、-fdata-sections，在编译生成的.o目标文件中，会将每个函数或数据段，放在各种单独独立的section中；
+-  在链接生成最终可执行文件时，如果带有-Wl,--gc-sections参数，并且之前编译目标文件时带有-ffunction-sections、-fdata-sections参数，则链接器ld不会链接未使用的函数，从而减小可执行文件大小；
+-  如果使用了-r的链接参数，来产生重定位的输出，需要显示的调用-e参数来指定程序入口。否则-Wl,--gc-sections不会生效。
+
+-------------------->>>>c++ primer 5
+CCFLAGS = -std=c++0x -I..
+LOCFLAGS = -I../directory
+
+//------------------>>>>
+动态库so与静态库a
+http://www.cnblogs.com/jiqingwu/p/linux_dynamic_lib_create.html
+
+//------------>>>>>>>>>>>>>
+方法1：VPATH = src:../headers
+方法2：
+	1、vpath <pattern> <directories>
+    为符合模式<pattern>的文件指定搜索目录<directories>。
+	vpath %.c ../../peer ./
+
+    2、vpath <pattern>
+    清除符合模式<pattern>的文件的搜索目录。
+
+    3、vpath
+    清除所有已被设置好了的文件搜索目录。
+
+
+//------------>>>>>>>>>>>>>
+忽略指定文件
+FILES := $(wildcard $(PATH)/src/*.cc)
+SRC_FILES += $(filter-out $(PATH)/src/a.cc $(PATH)/src/b.cc $(FILES))
+
+
+//------------>>>>>>>>>>>>>
+一下功能相同
+OBJ := $(patsubst %.cpp, %.o, $(SRC_CPP))
+OBJ := $(SRC_CPP:%.cpp=%.o)
+OBJ := $(SRC_CPP:.cpp=.o)
+
+
+//-------------->>>>
+ar rv libapue.a $? 	// 使用更新的文件更新静态库
+ranlib libapue.a 	//更新库符号索引表，但GUN ar已经默认做了，这步操作是历史遗留产物
+
+// 编译结构 ------->>>>>
+目录结构
+neon \
+|---project  	(Makefile)
+|---source 	(src)
+|---bin		(lib)
+
+ROOT 	= ..
+SRCDIR 	= $(ROOT)/source
+SRC_CPP = $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.cpp))
+SRC_C 	= $(foreach dir, $(SRCDIR), $(wildcard $(dir)/*.c))
+SRC 		= $(SRC_CPP) $(SRC_C)
+OBJ_CPP = $(patsubst %.cpp, %.o, $(SRC_CPP))
+OBJ_C 	= $(patsubst %.c, %.o, $(SRC_C))
+OBJ 		= $(OBJ_CPP) $(OBJ_C)
+MARLIN_SRCDIR 	= $(XXX)/neon_src
+MARLIN_SRC_C 	= $(foreach dir, $(MARLIN_SRCDIR), $(wildcard $(dir)/*.c))
+MARLIN_OBJ_C 	= $(patsubst %.c, %.o,$(MARLIN_SRC_C))
+MARLIN_DEP_C 	= $(notdir $(patsubst %c, %.d, $(MARLIN_SRC_C))
+MALRIN_DEP		= $(foreach file, $(MARLIN_DEP_C), $(MALRIN_SRCDIR)/$(file))
+MARLIN_OPTS 	= -I$(MARLIN_SRCDIR)
+CC_OPTS 		+= $(MARLIN_OPTS)
+$(MARLIN_OBJ_C) : %.o :%.c
+	@echo "[CC] $(notdir $<)"
+	@$(CC) $(CC_OPTS) -MM $< | sed -e 's/\(.*\)\.o/\$$\(MALRIN_SRCDIR\)\/\1.o/g' > $(@ : .o=.d)
+	@$(CC) $(CC_OPTS) $(WARN_FLAGS) -c -o $@ $< || { echo "$[Error] (CC) $(CC_OPTS) $(WARN_FLAGS) -c -o $@ $<" 1>&2;exit 1;}
+clean:
+	@echo clean $(AP_NAME)
+	@rm -f $(OBJ) $(MARLIN_OBJ_C)
+	@rm -f $(DEP)
+	
+// libgstneon.so 更新tar包问题 ------->>>>>
+
+ifeq($(TOOLCHAIN), )
+$(error ERROR USAGE - please select the correct target cpu for TOOLCHAIN)
+endif
+
+TMP_DIR = ./_release.$(CHIP)
+releaseMSTREAMER:
+	@echo "What the fuck ....."
+#untar file
+	@[ -d $(TMP_DIR).$@ ] && rm -fr $(TMP_DIR).$@ ; mkdir $(TMP_DIR).$@
+	@cd $(TMP_DIR).$@; tar zxf $(TARFILE_DIR)/$(MSTREAMER_TAR).tar.gz
+ifneq ($NEON_RELEASE_ENABLE)_$(RTP_RELEASE_ENABLE)_$(RTSP_RELEASE_ENABLE),0_0_0)
+ifeq ($(NEON_RELEASE_ENABLE,1)
+	@$(MAKE) -C $(MSTREAMER_DIR) clean-neon
+	@$(MAKE) -C $(MSTREAMER_DIR) neon
+	@cd $(TMP_DIR).$@; cp -fr ../$(MSTREAMER_DIR)/element/neon/bin/libgstneon.so ./mstreamer/lib/gstreamer-0.10/ ; tar czf $(MSTREAMER_TAR).tar.gz *;
+endif
+endif
+	cd $(TMP_DIR).$@;cp -fr $(MSTREAMER_TAR).tar.gz $(TARFILE_DIR)
+#copy libs
+	@if [-d $(DYNAMIC_LIBPATH)/gstreamer-0.10 ]; then rm -fr $(DYNAMIC_LIBPATH)/gstreamer-0.10 ; fi
+	@find $(TMP_DIR).$@/mstreamer -name '*.a' -exec rm -fr {} \;
+	@ln -s /application/rc $(TMP_SRC).$@/mstreamer/lib/gstreamer-0.10/rc
+	@find $(TMP_DIR).$@ -name '*.so*' -exec cp -f -d {} $(DYNAMIC_LIBPATH) \;
+	@[ -d $(INCLUDE_DIR)/mstreamer ] || mkdir -p $(INCLUDE_PATH)/mstreamer
+	@rm -fr $(TMP_DIR).$@ 
+	
+strip-all ------->>>>>
+find ${HI_LOEWE_OUT}/bin -type f|xargs -i file {}|grep "not stripped"|cut -d: -f1|xargs -i ${CROSS_COMPILE}strip --strip-all {}
+find ${ROOTBOX_DIR}/lib ${ROOTBOX}/bin ${ROOTBOX}/usr -type f -not -name "*.ko" | xargs -i file {} | grep "not stripped" | cut -d: -f1 | xargs -i ${CROSS_COMPILE}strip
+
+简单例子 ------->>>>> 原文：https://blog.csdn.net/test1280/article/details/81157767 
+SRC = mymath.c
+OBJS = $(SRC:%.c=%.o)
+
+LIB = libmymath.so
+SONAME = $(LIB)
+CC = gcc -std=gnu99 -fPIC
+CFLAGS = -g -O2 -Wall -Wextra
+LDFLAGS = -Wl,-soname,$(SONAME)
+DEPLIBS =
+SHARED = -shared
+
+.c.o:
+    $(CC) $(CFLAGS) -o $@ -c $<
+    @echo "Compile $< to $@ OK"
+
+all:
+    @make libmymath
+
+libmymath: $(OBJS)
+    $(CC) -o $(LIB) $(SHARED) $(LDFLAGS) $(OBJS) $(DEPLIBS)
+
+clean:
+    @rm -f $(OBJS)
+    @rm -f $(LIB)
+
+.PHONY: all clean
+

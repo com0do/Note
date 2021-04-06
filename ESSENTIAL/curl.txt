@@ -1,0 +1,8 @@
+﻿
+分块传输编码：Chunked transfer encoding  (http1.1引入)
+一边产生数据，一边发给客户端
+	1  动态内容，content-length无法预知
+	2  最后发送消息头字段，例如消息的内容使用散列进行签名，需缓冲完成才能计算
+	3 全部压缩，压缩和传输同时进行
+
+response header: Transfer-Encoding:chunked

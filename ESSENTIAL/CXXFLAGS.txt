@@ -1,0 +1,80 @@
+﻿
+-Wl,-soname   https://blog.csdn.net/test1280/article/details/81157767
+
+CXXFLAGS += -Werror
+	 -Wno-error=unused-parameter 
+	 -Wno-error=unused-but-set-variable
+	 -Wno-error=return-type
+	 -Wno-error=format
+	 -Wno-error=format-nonliteral
+	 -Wno-error=unused-variable
+	 -Wno-error=unused-value
+	 -Wno-error=unused-function
+	 
+	-Wno-builtin-macro-redefined
+	
+	#一般只有对程序运行效率及资源占用比较看重的场合才会使用, 
+	# 如果要做这两个的话最好连libstdc++和其他所有的的c++库都用这两个参数重新编译一遍,
+	#  否则光是你自己的程序禁用了这两个特性, 而别的库依然开着, 效果就大打折扣了
+	-fno-rtti 			# 禁用运行时类型信息
+	-fno-exceptions 	#禁用异常机制
+	# Do not emit the extra code to use the routines specified in the C++
+		ABI for thread-safe initialization of local statics. You can use this
+		option to reduce code size slightly in code that doesn’t need to be thread-safe.
+	-fno-threadsage-static
+	
+	
+jamroot ---------->>>>>
+path-constant BUILDENV : buildenv ;
+path-constant PROJECTROOT : . ;
+	
+DEPENDS += opera-njse;
+
+CFLAGS += -Wno-error=unused-parameter ;
+CFLAGS += -I/usrinclude
+
+CXXFLAGS += -Wno-error=unused-parameter -fPIC ;
+CXXFLAGS += -Wl,-Bstatic,-Llib,-l3s;
+CXXFLAGS += -Wl,--start-group "somepath/crypto_test_cases.o" -rdynmic --sysroot=/somepath
+CXXFLAGS += -Wl,-h -Wl,-l:d1.so
+			
+LDFLAGS += -lcrypto
+
+------->>头文件搜索顺序
+搜索顺序: -I指定的文件夹 =》 -isystem指定的文件夹 =》 标准系统头文件夹
+------->>函数或变量搜索
+dlsym(RTLD_DEFAULT,"log");  RTLD_NEXT;
+前者将使用默认库搜索顺序查找所需符号的第一个匹配项。 后者将在当前库之后的搜索顺序中查找下一个函数。 
+这使得人们可以在另一个共享库中的函数中提供一个包装。
+
+------->>截获动态库函数
+export LD_PRELOAD="/tvservice/mslib/libteec.so"
+查看动态库带出的函数名：nm -Do libteec.so
+动态库有没有注入到进程空间，linux下通过/proc文件系统查看进程加载的动态库
+ps x|grep tvmain   # get pid(1228)
+cat /proc/1228/maps
+gcc优化时自动将printf替换成puts,可禁止gcc使用内建函数 -fno-builtin-printf
+
+------->>连接器对加载库的检测 https://my.oschina.net/yepanl/blog/2222870
+  GCC/G++提供了 -Wl,--as-needed 和 -Wl,--no-as-needed 两个选项，这两个选项一个是开启特性，一个是取消该特性。
+    在生成可执行文件的时候，通过 -lxxx 选项指定需要链接的库文件。以动态库为例，如果我们指定了一个需要链接的库，则连接器会在可执行文件的文件头中会记录下该库的信息。而后，在可执行文件运行的时候，动态加载器会读取文件头信息，并加载所有的链接库。在这个过程中，如果用户指定链接了一个毫不相关的库，则这个库在最终的可执行程序运行时也会被加载，如果类似这样的不相关库很多，会明显拖慢程序启动过程。
+    这时，通过指定 -Wl,--as-needed 选项，链接过程中，链接器会检查所有的依赖库，没有实际被引用的库，不再写入可执行文件头。最终生成的可执行文件头中包含的都是必要的链接库信息。-Wl,--no-as-needed 选项不会做这样的检查，会把用户指定的链接库完全写入可执行文件中。
+    总结：-Wl,--as-needed 选项指示最终的可执行文件中只包含必要的链接库信息，-Wl,--no-as-needed 选项指示在命令行中指定加载的所有库都记录到可执行文件头中，并最终由动态加载器去加载。
+
+gcc选项-g与-rdynamic的异同 https://www.cnblogs.com/LiuYanYGZ/p/5550544.html
+-rdynamic 用来通知链接器将所有符号添加到动态符号表中,（目的是能够通过使用 dlopen 来实现向后跟踪）
+-g是一个编译选项，即在源代码编译的过程中起作用，让gcc把更多调试信息（也就包括符号信息）收集起来并将存放到最终的可执行文件内。 
+相比-g选项， -rdynamic 却是一个 连接选项 ，它将指示连接器把所有符号（而不仅仅只是程序已使用到的外部符号）都添加到动态符号表（即.dynsym表）里，以便那些通过 dlopen() 或 backtrace() （这一系列函数使用.dynsym表内符号）这样的函数使用。.dynsym表里的数据并不能被strip掉
+
+静态库的链接顺序问题
+    如果liba.a依赖于libb.a中的一个函数foob()，那么在编译时必须将libb.a置于liba.a之后，即，... -la -lb，否则则会出现找不到符号的错误。可以使用--whole-archive选项来绕过这个问题，但是会增加可执行文件的大小，而且不同库中不能有同名函数。
+    如果liba.a依赖于libb.a中的一个函数foob()，而libb.a依赖于liba.a中的一个函数fooa()时如何解决？使用--start-group、--end-group
+    -Wl,--start-group "a.o" -lrt -ldl -Wl,--end-group -rdynamic --sysroot=/home/arm-none-linux-gnueabi/libc
+    -Wl,-rpath-link=/tmp/startup/main/release/
+    -Wl,-rpath=/usr/local/lib
+LINKFLAGS = -rdynamic --sysroot=$(PROJECTTARGET) -Wl,-z,relro,-z,now -l$(SYSLIBS) -Wl,-rpath=/lib,-rpath=/usr/lib,-rpath=/usr/local/libs ;
+AVS设置：-lm "-Wl,-rpath=/usr/local/opt/avsservice/thirdlib"
+
+libevent链接问题和分析方法：https://www.cnblogs.com/digdeep/p/4801467.html  [Linux 下编译安装软件，找不到共享库 xx.so 的解决办法]
+ 	LD_DEBUG=libs ./first -v    等方法！！！！
+

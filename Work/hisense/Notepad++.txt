@@ -1,0 +1,90 @@
+﻿
+-sh-3.2# busybox uname -a  
+Linux hisensetv-00301bba02db
+ 4.19.79+ #1 SMP PREEMPT Wed Jun 10 05:36:11 CST 2020 armv7l GNU/Linux
+-sh-3.2# 
+-sh-3.2# cat /proc/version 
+Linux version 4.19.79+ (gfkfcmo@90c1eb3a4a95) (gcc version 4.9.3 20141031 (prerelease) (Linaro GCC 4.9-2014.11)) #1 SMP PREEMPT Wed Jun 10 05:36:11 CST 2020
+-sh-3.2# 
+
+source envsetup.sh mstar 6886 dvb MICALIDVB6886
+source envsetup.sh mtk 9602 atsc MTK_DEV_US
+source envsetup.sh novatek 72671 dvb NOVATEK_DEV_EU
+
+coredump位置
+ac CORE_DUMP_PATH /OAD/core_dump.%e.%p.gz  回车  reset: no dictionary configured!
+printenv bootargs
+
+仓库位置: 
+ics/sysctl/dock/system/hal/port/oss/buildenv/mi_project/avs
+
+按键问题搜索：
+ir:|app-manager:|suspend to |timeout
+
+磁盘问题搜索：
+masman:\ \[|fsal2\[|granary:|supend to|getDmpFiles|volume-biz|frame:|onUSBIteratorEvent|readUsbDetail
+mascl_dev_update|Reggie-Eventtype|fillVolumeInfo|mediaCallback|DeviceManager|onUSBIteratorEvent|granary:|mdharvester:
+
+
+novatek-- PRD位置
+http://10.18.203.58:8000/svn/doc/DevProjiectMNG/NT72671/72671D_EUEM/01-Software/01-Start/tags/02-PRD/bluetooth
+分支：mstar-NT72671_VIDAA_U5
+
+
+modejs最新路径
+/9602/vendor/hisense/application/hisenseUI/cobalt/cobalt-sdk-2020/cobalt/src/cobalt/hisense/modejs_xx
+
+STR关机
+echo "mem" > /sys/power/state
+
+/hidata/model/config/config.ini
+[PowerOnOff]
+FakeStandby = 0
+
+mount -o remount,rw /hidata/model
+
+cat >>/hidata/model/config/board.ini <<EOF
+
+[MicChip]
+MicChipSupport  = 1
+MicChipType     = 0
+MicGPIOMute     = 200
+MicGPIOReset    = 209
+MicGPIOPower    = 207
+MicGPIOMutePhysical = 210 
+MicGPIOLED      = 200
+EOF
+
+
+farfield:
+
+host_query_meter_cmd: 这般demo中有参考信号的测量。
+正式固件可以通过切换模式来验证MIC和参考信号
+ZMP6: MIC信号直通，用来验证MIC信号
+ZMP7：参考信号直出，用来验证参考信号
+
+附件里的固件7.76.9.19已添加ZMP7模式。
+
+grep ir: /var/local/log.txt|busybox tail -30
+grep i2cuart /var/local/log.txt|busybox tail -30
+
+mount -o remount,rw /tvconfig/
+cp /media/sda1/keymap/* /tvconfig/keymap/
+
+
+
+
+
+1 EventHandler
+	1 忘写虚析构函数
+	2 成员函数指针的定义方式：R(C::*method)(P)
+	3 忘写typeid，而且需要捕获异常
+	4 忘写bool转换函数
+	5 如何构造定义：
+		typedef BaseArg1Mehtod<int,const Event&> EventHandler; 		//用于入口参数
+		typedef Arg1Method<int,cosnt Event&>	EventHandlerImpl;		//用于入口实参
+		EventHandlerImpl(*this,&TimeoutProvider::onEvenetTimerEvent);   //保存一个实例和接口。
+2 多继承和dynamic_cast
+3 sigaction  ---》siginfo_t
+4 backtrace ---> what action 
+5  总结一下这一堆：DefaultPOSIXProcess ---->>> AbstractProcessMember

@@ -1,0 +1,74 @@
+﻿
+http://www.cnblogs.com/kevingrace/p/6496899.html
+ 	- 窗口 	Window
+ 	- 窗格 	Pane
+ 	- 会话	Session
+ 	
+ * 一个会话可以包含多个窗口，创建专用会话： tmux new -s session_name
+ * 在会话内创建新会话：	Ctrl-b new -s session_name
+ * 会话间切换：			Ctrl-b s
+ * 接入已开启会话			
+ 	tmux attach
+ 	tmux a 
+ 	tmux a -t session_name
+ 
+ 	- 配置文件 	~/.tmux.conf
+ 	
+ 		unbind-key j
+ 		bind-key j select-pane -D
+ 		unbind-key k
+ 		bind-key k select-pane -U
+ 		unbind-key h
+ 		bind-key h select-pane -L
+ 		unbind-key l
+ 		bind-key l select-pane -R
+ 	
+ 	
+ 	基础
+		? 获取帮助信息
+	会话管理
+		s 列出所有会话
+		$ 重命名当前的会话
+		d 断开当前的会话
+	窗口管理
+		c 创建一个新窗口
+		, 重命名当前窗口
+		w 列出所有窗口
+		% 水平分割窗口
+		" 竖直分割窗口
+		n 选择下一个窗口
+		p 选择上一个窗口
+		0~9 选择0~9对应的窗口
+	窗格管理
+		% 创建一个水平窗格
+		" 创建一个竖直窗格
+		q 显示窗格的编号
+		o 在窗格间切换
+		} 与下一个窗格交换位置
+		{ 与上一个窗格交换位置
+		! 在新窗口中显示当前窗格
+		x 关闭当前窗格
+	其他
+		t 在当前窗格显示时间
+ 	
+ 	
+ 	
+ //-------------->>>>> 缓冲区搜索
+ Ctrl + b [ 进入复制模式
+ Ctrl + b :set-window-option -g mode-keys vi
+ 	
+ 	
+ //------就是把下面这段配置加入到配置文件 ~/.vimrc 中，这样 Vim 就会自动地阻止粘贴文本时的自动缩进。
+ 	百度：Tmux 速成教程：技巧和调整
+ 	
+ 	
+ //-------------->>>>>tmate
+
+
+
+ //-------------->>>>>
+[plugin manager](https://liam.page/2016/09/10/tmux-plugin-resurrect/)
+prefix shift-i      # install
+prefix shift-u      # update
+prefix alt-u        # uninstall plugins not on the plugin list
+

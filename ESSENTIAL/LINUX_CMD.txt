@@ -1,0 +1,36 @@
+﻿
+
+
+du查看目录大小，df查看磁盘使用情况。
+
+	1.查看某个目录的大小：du -hs /home/master/documents
+  		查看目录下所有目录的大小并按大小降序排列：sudo du -sm /etc/* | sort -nr | less
+	2.查看磁盘使用情况（文件系统的使用情况）：sudo df -h
+	
+htop使用: https://www.cnblogs.com/lazyfang/p/7650010.html
+
+版本查看
+	cat /proc/version
+	uname -a
+	lsb_release -a
+	cat /etc/issue
+	getconfig LONG_BIT 	//32/64系统
+	file /bin/ls
+	
+swap
+	sudo dd if=/dev/zero of=/swap/swapfile bs=1024 count=4194304
+	mkswap /swap/swapfile
+	swapon /swap/swapfile
+	增加/etc/fstab：/swap/swapfile   swap    swap default  0 0
+	
+磁盘挂载fstab 【错误会无法开机，只能进入救援模式再次修改fstab】
+	UUID=1234 	/media/carlos/U-disk vfat defaults,nofail 0 0
+或者使用udev来自动挂载：https://blog.csdn.net/lzh_wk/article/details/78482049
+
+
+export
+	(export AA="what fuck");(exprt PATH="/bin/bash:$PATH");./a.sh
+进阶命令
+
+	lsof
+	nmap

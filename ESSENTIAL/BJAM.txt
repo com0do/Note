@@ -1,0 +1,151 @@
+﻿
+BJAM的运行有三个阶段：
+	Parsing:读取jamfile并解析其中的指令
+	Binding:扫描目录查找jamfile中定义的target，为每个file target绑定一个文件系统中的路径。
+	Updating:执行系统命令创建或者更新target
+	
+根目录下必须有个jamroot文件，可以为空文件，只用来指定根目录。如果不为空，则里面的设置会传递给所有子目录的jamfile中。bjam在执行时会在当前目录下查找jamroot，若没有找到则向上级目录继续查找.
+另外需要jamfile，包含编译目标及各种命令
+执行bjam即可编译
+编译结果生成在”bin/编译工具/debug”和”bin/编译工具/release”中
+
+BJAM （执行）
+bjam [ options ] [target | feature=value …]
+	options:
+		-a: 不管文件是否更新，强制编译所有的目标
+		-j n 同时开启n个任务来编译，可加速编译
+		-n 显示所有的构建命令，但不执行
+		-q 编译一旦遇到错误即停止，默认情况下是不停止
+	taget:jamfile中的每个target
+	feature=value:编译选项，比如toolset=gcc  variant=debug,release
+	
+Jamfile
+type  target : sources : requirements : default : usage-requirements ;
+
+	各关键字之间必须“空格”隔开，“:”与“；”前后也必须用空格隔开。
+	换行、TAB也是“空格”
+	type:指定编译目标的类型，有exe，lib等类型
+	target :目标名称，不能为空
+	sources:目标依赖的源文件列表，可以为多个源文件
+	requirements:构建目标时的必选项，不能在命令行中修改
+	default:构建目标时的默认选项，可以在命令行中修改
+	usage-requirements:这一栏中选项会传给目标所依赖的所有源文件
+	如果某一栏中没有值，则用两个冒号加空格表示：
+	exe hello : main.cpp : : <optimization>speed ;
+	
+Jamfile(requirements)
+requirements中最常用的方法就是添加一些编译选项，比如：
+     exe hello : main.cpp : <define>LINUX_PLATFORM <include>”./png” ;
+常用选项如下：
+	<include>
+	<warnings> 编译器是否显示警告，有on(显示预设的警告级别),off(关闭),all(显示所有警告)。比如：<warnings>on 
+	<debug_symbols>是否加入debug信息，相当于gcc中-g选项，有on/off两个值。
+	<define>定义各种宏。<define>A定义宏，<define>A=B定义常数；
+	<optimization>优化开关。off，关闭；speed，为速度优化;space，为空间优化。
+	<cflags>指定编译器命令行参数
+	<cxxflags>同上，在编译C++代码时有效
+	<linkerflags>指定链接器参数
+
+除在jamfile中指定编译参数，在bjam命令行也可以指定：
+     bjam define=USE_GCC_4_0 define=“MAX_SOURCE_NUM=2” warnings=off     
+     
+bjam命令行参数不能修改requirements中指定的选项，比如：
+     exe hello : main.c :<warnings>on ;
+     那么bjam warnings=off就不起作用，warnings还是打开状态。     
+     
+bjam命令行中的参数可以修改jamfile中default栏中的参数，比如：
+     exe hello : main.cpp : : <warnings>on ;
+     那么bjam warnings=off即可把warnings置为off状态
+ 
+ Jamfile(链接动态库)
+     可执行文件若要链接其它库可以这样：
+      exe hello : main.cpp  test
+      lib   test : file1.cpp file2.cpp
+若要链接第三方库可以这样：
+      exe hello : main.cpp  png
+      lib   png : :<name>png <search>”/usr/lib”
+
+Jamfile(usage-requirements)
+例子：
+     exe hello : main.cpp png : <include>”/home/3rd_party/png/include” ;
+     exe hello2:file.cpp png : <include>”/home/3rd_party/png/include” ;
+     lib png : : <name>png <search>”/home/3rd_party/png/lib” ;
+     由于hello与hello2都要用到libpng库，就都要指定png库的头文件在哪儿，因此很繁琐。但可以放在usage-requirements中，如下：
+     exe hello : main.cpp png ;
+     exe hello2:file.cpp png ;
+     lib png : : <name>png <search>”/home/3rd_party/png/lib” : :<include>”/home/3rd_party/png/include” ;
+
+Jamfile(多jamfile)
+
+project/
+	|--Jamroot
+	|--include /
+		|--common.h
+	|--lib/
+		|--Jamfile
+		|--func.h
+		|--func.cpp
+	|--src/
+		|--Jamfile
+		|--main.cpp
+		|--ui.cpp
+		
+lib目录中jamfile:
+     lib myLib : file1.cpp file2.cpp : : : <include>”./” ;
+Src目录中jamfile:
+       exe hello : main.cpp ui.cpp  ../lib//myLib ; 
+      “../lib//myLib”含义为上层目录lib中的jamfile中的myLib目标                
+      
+ jamroot可以为整个工程指定一些编译选项。
+上述例子中<include>这个目录中的头文件是lib和src两个工程共用的，因此可以在jamroot中指定，如下：
+     project : requirements  <include >”./include” ;
+     build-project  src ;
+     其中”build-project”指定当在根目录中执行bjam时要执行哪个目录中的jamfile。
+ 
+ Jamfile(rule)
+	rule就是在解析和执行jamfile时所执行的一个过程。
+	可以给一个rule传递参数。
+	每个参数都是一个list，每个参数都由”:”分隔，以”;”结束。”:”前后要有空格，”;”前要有空格。
+	例子：
+     	rule  myRule
+     	{
+            	Echo first arg is $(1) ;
+            	Echo second arg is $(2) ;
+      	}
+    	myRule  a : b c d ;
+	lib exe 实际都是rule
+
+Jamfile(action)
+	actions就是在updating过程中用以特定系统命令的特殊的rule。
+	例子：
+     	actions myAction
+     	{
+            	touch $(1) 
+            	cat $(2) >> $(1)
+    	}
+	actions有以下特点使其区别于普通rule：
+	actions只能有两个参数。
+	所有传递给actions的参数都被认为是target。
+	在actions被传递给OS命令行执行前，actions中的jam变量会被先展开。
+
+##############ZERO##########################
+path_constant path : . ;
+lib marlin_lib : : <file>some/lib : : <include>some/include ;
+##############FIRST##########################
+TYPE = none ;
+PUBINCDIRS = include ;
+PUBINCDIRS += slim ;
+PUBINCDIRS  += dtcpip/include ;
+
+PUBLIBS = [ glob target/linux/output/release/*.* ] ;
+PUBLIBS += [ glob dtcpip/lib/*.* ] ;
+#############SECOND###########################
+TYPE = lib ;
+LINK = static ;
+
+INCDIRS = include slim dtcpip/include ;
+SRCDIRS = target/linux/peer ;
+LIBS = [ glob target/linux/output/release/*.* ] ;
+LIBS += [ glob dtcpip/lib/*.* ] ;
+CFLAGS =-Wno-error=unused-parameter ;
+

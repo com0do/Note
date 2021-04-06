@@ -1,0 +1,194 @@
+
+
+# use root
+su
+# 在password行输入密码
+# Update current packages
+apt-get update
+apt-get upgrade
+# Install SELinux Environment
+apt-get install policycoreutils
+# Install cross-compiling environment (This list is recommended by MTK)
+apt-get -y install git zlib1g-dev:i386 zip gnupg flex bison gperf build-essential curl zlib1g-dev g++ g++-multilib libc6-dev-i386 gcc-multilib lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils xsltproc unzip procmail
+apt-get -y install gitg git-gui lzop zlib1g-dev screen indent lftp lvm2 realpath git-email enca vim elinks sshfs mingw32 bonnie++ doxygen gzip joe libncurses5-dev libncurses5 libgmp3-dev libmpfr-dev libmpc-dev libc6-dev-i386 libcloog-ppl-dev gawk procmail libssl-dev dos2unix libc++-dev autoconf automake libtool
+安装SELinux后Ubuntu可能无法reboot重启。建议提前做好备份。如果未来reboot失败，建议咨询配置管理组。
+SELinux 和cryptsetup鉴于大家都有问题，且现阶段用不到，已经删除。
+
+
+在大部分开发Ubuntu服务器里，安装如下package可能就可以满足编译环境
+
+apt-get install build-essential libc6-dev-i386 g++-multilib gcc-multilib policycoreutils
+注意事项：
+3.1 与其他target（比如novatek、6886）使用不同窗口编译，环境变量会有影响。
+
+3.2 开发过程有其他问题会补充在评论。
+3.3 编译时遇到如下问题，需要升级gcc/g++版本至4.8.3之上。
+
+
+
+
+mtk toolchain存放位置：
+
+MTK 文件传输系统：
+https://transfer.mediatek.com/，可用账号：sunyuqi1@hisense.com 密码：sunyuqi1
+Downloading the Source Code
+The Kilby source tree is located in a Git repository hosted by dmtgerrit2.hisense.com. The Git repository includes metadata for the whole source, including those related to changes to the source and the date they were made. This document describes how to download the source tree for a specific code-line.
+
+Installing Repo
+Copy it from whoever has this script or 
+
+$ curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+$ chmod a+x ~/bin/repo
+Initializing a Repo client
+After installing Repo, set up your client to access the kilby source repository:
+
+ 1. Create an empty directory to hold your working files.
+
+ 
+
+$ mkdir <WORKING_DIRECTORY>
+$ cd <WORKING_DIRECTORY>
+ 
+
+2. Configure git with your real name and email address. To use the Gerrit code-review tool, you will need an email address that is connected with dmtgerrit2.hisense.com. Make sure this is a live address at which you can receive messages. The name that you provide here will show up in attributions for your code submissions.
+
+If you have already done this configuration, please ignore this step.
+
+ 
+
+$ git config --global user.name "Your Name"
+$ git config --global user.email "you@example.com"
+ 
+
+3. Configure your ssh config
+
+Add the following lines to <HOME>/.ssh/config
+
+ 
+
+host dmtgerrit2.hisense.com
+port 29418
+user <YOUR GERRIT ACCOUNT>
+ 
+
+ 
+
+4. Run repo init to bring down the latest version of Repo with all its most recent bug fixes. You must specify a URL for the manifest, which specifies where the various repositories included in the Kilby source will be placed within your working directory.
+
+branch name :hisense-vidaa-master
+
+ 
+
+repo init -u ssh://dmtgerrit2.hisense.com:29418/MTK5658DB/tv/manifest -b hisense-mstar_NT72671_VIDAA_U5  --repo-url=ssh://dmtgerrit2.hisense.com:29418/git-repo
+ 
+
+If you met errors such as "Permission denied", please login http://dmtgerrit2.hisense.com:8081/gerrit and go to setting–> SSH public key make sure you have configured your public key.
+
+Downloading the Source code
+To pull down the Kilby source tree to your working directory from the repositories as specified in the default manifest, run
+
+ 
+
+cd .repo/repo
+git pull origin
+cd -
+repo sync -cj8
+ 
+
+Check out the source code
+ 
+
+repo start master --all
+ 
+
+'repo start' begins a new branch of development, starting from the revision specified in the manifest.
+
+ 
+
+Build Source Code  
+Makefile Target Name Pattern
+
+Makefile target name pattern
+<PRODUCT>[_<MODULE>][-<ACTION>]
+
+PRODUCT: product name, such as MTK_DEV_US
+MODULE: Which to be built, such as device, framewoek
+ACTION: such as all, clean, install, cleanist
+ 
+
+ 
+
+Build as follows
+Build all to generate image package for <PRODUCT>
+1. build all
+- make MTK_DEV_AU-all
+2. clean all
+- make MTK_DEV_AU-clean
+Notes:
+
+1.The  'glbic' version is required more than  '2.17' ,  otherwise package operation will fail. 
+
+If you want to  update glibc to 2.17 , you need to update your compiler ubuntu os enviroment to v14
+
+ 
+
+Build device of <PRODUCT>
+1. build device
+- make MTK_DEV_AU_device
+2. clean device
+- make MTK_DEV_AU-clean
+Build device of <PRODUCT>
+1. build hui
+- make MTK_DEV_AU_hui
+2. clean hui
+- make MTK_DEV_AU-clean
+Build framework of <PRODUCT>
+1. build framework
+- make MTK_DEV_AU_framework
+2. clean framework
+- make MTK_DEV_AU_framework-clean 
+Package as follows
+Package <PRODUCT>
+- make MTK_DEV_AU-pack
+Install image to output/<PRODUCT>/images
+Install
+1. install
+- make MTK_DEV_AU-install
+2. clean install
+- make MTK_DEV_AU-cleaninst
+Build loewe module
+1. source ./envsetup.sh mtk 9602 AU dvb MTK_DEV_AU
+2. bjam <PATH>//install
+Like this –
+
+ 
+
+ 
+
+Output  
+After build all ( or make install)  , the usb upgrade image in MTK_DEV_EU platform is "usb_MTK_DEV_AU.bin" 
+
+
+
+Burn Guide
+1.拿到MstarUpgrade.bin，放到U盘根目录下，插上U盘上电快速按着电脑enter键(要连串口)，输入如下命令即可开始升级，会看到屏幕上有升级进度条。
+
+<< M7332 >># custar
+
+ 
+2.开机后系统会重启，原因是没有喂狗，可以通过关掉wdg解决，方法如下：
+
+开机按enter键进入uboot下敲如下cmd再重启：
+
+
+
+ 
+3.开机后敲入cmd以root权限登录
+su -
+password: mtkroot
+
+     
+
+ 
+
+ 

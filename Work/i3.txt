@@ -1,0 +1,7 @@
+
+
+## scream shot
+[LINK](https://www.zhihu.com/question/345311004)
+bindsym Print --release exec /usr/bin/flameshot gui
+for_window [class="flameshot"] floating enable
+

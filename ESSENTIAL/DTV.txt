@@ -1,0 +1,31 @@
+﻿ES:
+压缩后的视音频信号称作ES(elementary stream)流，包括：	
+	视频流,	
+	音频,	
+	数据流——任何类型的压缩或未压缩数据
+压缩后所有ES流被打成不同长度的包，叫做PES(packetized elementary streams)。
+所有ES流首先被打包成不同长度的PES包，通常为64kbytes。开头为6byte的PES头：
+TS:
+PES结构不适合传输，尤其不适合一个数据流中有多个节目的广播应用。而MPEG-2目标是将6,10甚至20个电视节目或广播节目形成一个复用MPEG-2数据流，然后通过卫星、电缆或地面传输。
+因此，PES包再分成固定长度的更小的包，即TS包(transport stream packets)：
+MPEG-2的TS包长188字节，包含所有节目的所有数据
+每个节目有一个编码器对所有ES流编码，产生PES，并将PES包打包成TS包。
+每个节目的码率通常约2～8Mbit/s，所有节目的TS流再复用成一个总的TS流，最大约40Mbit/s。
+一个TS流中通常有6,8,10甚至20个节目组成。
+码率在传输过程中可变，但总码率必须保持不变。
+一个节目可以包括视频和音频，或单纯音频或单纯数据，结构灵活可变。
+TS流中包含一些“表”来描述组成结构，解码器可以利用这些表来确定TS流的当前结构。
+
+
+
+PSI: Program Specific Information (ISO-13818-1)
+	PAT: Program Association Table
+	PMT: Program Map Table
+	CAT: Conditional Access Table
+SI: Service Information (ETSI EN 300 468)
+	NIT: Network Information Table 
+	SDT: Service Description Table
+	BAT: Bouquet Association Table
+	EIT: Event Information Table, Present/Following, Schedule
+	TDT: Time and Date Table
+	TOT: Time Offset Table

@@ -1,0 +1,47 @@
+
+" basic
+"set background=dark
+syntax enable
+colorscheme desert
+set number
+set relativenumber
+
+"--------------------------------------------------------------
+" common
+" move current line with number
+nnoremap [e :<c-u>execute 'move -1-'. v:count1<cr>
+nnoremap ]e :<c-u>execute 'move +'. v:count1<cr>
+" add space line with number
+nnoremap [<space> :<c-u>put! =repeat(nr2char(10), v:count1)<cr>'[
+nnoremap ]<space> :<c-u>put =repeat(nr2char(10), v:count1)<cr>
+
+" from 韦神-------------------------------------------------
+so ~/.vim/vim/asc.vim
+so ~/.vim/vim/skywind.vim
+let g:bundle_group = ['simple', 'basic', 'inter', 'opt', 'ale', 'echodoc']
+let g:bundle_group += ['high', 'vimwiki', 'airline', 'lightline', 'nerdtree']
+
+so ~/.vim/vim/bundle.vim
+
+" end 韦神-------------------------------------------------
+
+command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor
+set wrap
+
+"split,vsplit,only
+function! Zoom ()
+    " check if is the zoomed state (tabnumber > 1 && window == 1)
+    if tabpagenr('$') > 1 && tabpagewinnr(tabpagenr(), '$') == 1
+        let l:cur_winview = winsaveview()
+        let l:cur_bufname = bufname('')
+        tabclose
+
+        " restore the view
+		if l:cur_bufname == bufname('')
+            call winrestview(cur_winview)
+        endif
+    else
+        tab split
+    endif
+endfunction
+nmap <leader>z :call Zoom()<CR>

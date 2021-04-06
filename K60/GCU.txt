@@ -1,0 +1,44 @@
+﻿
+
+DIP 
+
+0 
+1
+2
+3  ：低4位是地址
+4  ：0-CT_100A,    1-CT_300A
+5  :  
+6  ：测试位
+7  : 是否使能辅助电源延迟掉电 if_aux_delay
+
+-----------------------------GCU---------------------------
+任务：
+bms_task,
+GCMU_task,
+gather_data_task,
+meter_task
+CAN_rx_task
+CAN_tx_task
+display_task
+master_commu_task
+slave_commu_task
+card_task
+
+
+-----------------------------GCU4TIU------------------
+bms
+GCMU_task
+gather_data_task
+meter_task
+CAN_rx_task
+CAN_tx_task
+-------------------------TIU-----------
+bms
+GCMU_task
+gather_data_task   		//TIU 收集急停、枪头温度、电子锁、主从通信状态 ！
+CAN_rx_task
+CAN_tx_task
+display_task     		 //TIU 有显示功能 和打卡功能 ！
+master_commu_task
+slave_commu_task
+card_task

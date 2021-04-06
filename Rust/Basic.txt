@@ -1,0 +1,29 @@
+﻿
+
+实现copy trait的直接copy，没有实现的所有权会出现转移。
+let filed_name = String::from("color");
+let field_value = String::from（“Blue");
+let mut map = std::collections::HashMap::new();
+map.insert(field_name,field_value);
+字符串所有权被转移至哈希表中。
+
+
+借用而不是获取所有权
+
+通过注解使用的trait
+
+方法可以选择获取self所有权
+
+enum
+将数据直接放入每一个枚举成员
+
+use
+当使用use关键字将名称导入作用域时，在新作用域中高可用的名称是私有的。
+
+UNICODE的每个标量值占用了2个字节存储。
+
+trait
+trait是对位置类型self定义的方法集
+
+closure
+第一次使用closure时，确定了推断类型和返回类型，接着这些类型被锁定进闭包中。

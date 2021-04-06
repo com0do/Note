@@ -1,0 +1,34 @@
+﻿
+http://blog.csdn.net/a4150902/article/details/7419995
+函数声明：char *inet_ntoa (struct in_addr ina);
+　　返回点分十进制的字符串在静态内存中的指针。
+　　所在头文件：<arpa/inet.h>
+　　假设你已经有了一个sockaddr_in结构体ina，你有一个IP地址"132.241.5.10"要储存在其中，你就要用到函数inet_addr(),将IP地址从 点数格式转换成无符号长整型。使用方法如下： 
+ina.sin_addr.s_addr = inet_addr("132.241.5.10"); 
+注意，inet_addr()返回的地址已经是网络字节格式，所以你无需再调用 函数htonl()。
+
+
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+ 
+int inet_aton(const char *cp, struct in_addr *inp);
+inet_aton() 转换网络主机地址cp(如192.168.1.10)为二进制数值，并存储在struct in_addr结构中，即第二个参数*inp,函数返回非0表示cp主机有地有效，返回0表示主机地址无效。
+
+in_addr_t inet_addr(const char *cp);
+inet_addr函数转换网络主机地址（如192.168.1.10)为网络字节序二进制值，如果参数char *cp无效，函数返回-1(INADDR_NONE),这个函数在处理地址为255.255.255.255时也返回－1,255.255.255.255是一个有效的地址，不过inet_addr无法处理;
+
+char *inet_ntoa(struct in_addr in);
+inet_ntoa 函数转换网络字节排序的地址为标准的ASCII以点分开的地址,,该函数返回指向点分开的字符串地址（如192.168.1.10)的指针，该字符串的空间为静态分配的，这意味着在第二次调用该函数时，上一次调用将会被重写（复盖），所以如果需要保存该串最后复制出来自己管理！
+
+int inet_pton(int af, const char *src, void *dst);
+这个函数转换字符串到网络地址，第一个参数af是地址族，转换后存在dst中
+inet_pton 是inet_addr的扩展，支持的多地址族有下列：
+AF_INET：src为指向字符型的地址，即ASCII的地址的首地址（ddd.ddd.ddd.ddd格式的），函数将该地址转换为in_addr的结构体，并复制在*dst中
+AF_INET6：rc为指向IPV6的地址，，函数将该地址转换为in6_addr的结构体，并复制在*dst中
+如果函数出错将返回一个负值，并将errno设置为EAFNOSUPPORT，如果参数af指定的地址族和src格式不对，函数将返回0。
+
+const char *inet_ntop(int af, const void *src, char *dst, socklen_t cnt);
+这个函数转换网络二进制结构到ASCII类型的地址，参数的作用和上面相同，只是多了一个参数socklen_t cnt,他是所指向缓存区dst的大小，避免溢出，如果缓存区太小无法存储地址的值，则返回一个空指针，并将errno置为ENOSPC 
+ 

@@ -1,0 +1,16 @@
+﻿
+
+debugfs 
+挂载点：/sys/kernel/debug
+mount -t debugfs none /sys/kernel/debug
+cat /sys/kernel/debug/usb/devices
+
+kmemleak
+CONFIG_HAVE_DEBUG_KMEMLEAK
+CONFIG_DEBUG_KMEMLEAK
+CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE
+启动echo scan/查看cat/清除检测信息echo clear： /sys/kernel/debug/kmemleak
+
+内核符号表
+CONFIG_KALLSYMS
+CONFIG_KALLSYMS_ALL
