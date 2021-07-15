@@ -27,3 +27,9 @@ echo ${var^^}
 echo ${var,}
 # 把变量中的所有大写字母，全部替换为小写
 echo ${var,,}
+
+
+正则  ---------->>>>
+input:  adfe_123456789012_dfe.txt
+sed -n '/txt$/s/^\w*_\(\w\{12\}\)[_.].*txt$/\1/w mac.txt' input.txt
+echo "lemon2color_34ce00892f43_ETFW.txt"| awk -F"[_.]" '{print $2}'

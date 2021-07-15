@@ -25,6 +25,11 @@ LDFLAGS = -L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib
 -  在链接生成最终可执行文件时，如果带有-Wl,--gc-sections参数，并且之前编译目标文件时带有-ffunction-sections、-fdata-sections参数，则链接器ld不会链接未使用的函数，从而减小可执行文件大小；
 -  如果使用了-r的链接参数，来产生重定位的输出，需要显示的调用-e参数来指定程序入口。否则-Wl,--gc-sections不会生效。
 
+
+-------------------->>>> -mfloat-abi
+hard/softfp
+
+
 -------------------->>>>c++ primer 5
 CCFLAGS = -std=c++0x -I..
 LOCFLAGS = -I../directory
